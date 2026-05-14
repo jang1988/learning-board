@@ -1,0 +1,124 @@
+.page { padding: 28px; max-width: 800px; }
+
+.topBar { margin-bottom: 28px; }
+.back {
+  background: none; border: none; font-size: 13px; font-weight: 600;
+  color: var(--color-text-2); cursor: pointer; padding: 0;
+  font-family: var(--font); margin-bottom: 10px; display: block;
+  transition: color .15s;
+}
+.back:hover { color: var(--color-primary); }
+.title { font-size: 22px; font-weight: 800; }
+.msg { font-size: 13px; color: var(--color-accent); font-weight: 600; margin-top: 6px; display: block; }
+
+.section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.sectionTitle { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+
+/* Lesson list */
+.lessonList { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.lessonRow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  gap: 12px;
+}
+.lessonMeta { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.lessonIdx {
+  font-size: 11px; font-weight: 700; color: var(--color-text-3);
+  background: var(--color-surface-2); padding: 2px 7px; border-radius: 5px;
+  flex-shrink: 0;
+}
+.lessonTitle { font-size: 13px; font-weight: 600; }
+.lessonUrl { font-size: 11px; color: var(--color-text-3); margin-top: 2px; font-family: var(--font-mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; }
+
+.deleteBtn {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: var(--color-danger-light); border: none;
+  color: var(--color-danger); cursor: pointer; font-size: 11px;
+  flex-shrink: 0; transition: opacity .15s;
+}
+.deleteBtn:hover { opacity: .7; }
+
+/* Add card */
+.addCard {
+  border: 1.5px dashed var(--color-border-strong);
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--color-bg);
+}
+.addTitle { font-size: 13px; font-weight: 700; }
+.addFields { display: flex; flex-direction: column; gap: 8px; }
+
+.input, .select {
+  padding: 9px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: var(--color-surface);
+  outline: none;
+  transition: border-color .15s;
+  width: 100%;
+}
+.input:focus, .select:focus { border-color: var(--color-primary); }
+
+.addBtn {
+  padding: 9px 18px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  align-self: flex-start;
+  transition: background .15s;
+}
+.addBtn:hover { background: var(--color-primary-hover); }
+.addBtn:disabled { opacity: .5; cursor: default; }
+
+/* Quiz */
+.noQuiz {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 14px; padding: 30px; text-align: center;
+  color: var(--color-text-2); font-size: 14px;
+}
+.quizInfo { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+
+/* Questions */
+.questionList { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.questionRow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  gap: 12px;
+}
+.questionMeta { display: flex; align-items: flex-start; gap: 10px; flex: 1; }
+.qNum {
+  font-size: 11px; font-weight: 700; color: var(--color-primary);
+  background: var(--color-primary-light); padding: 2px 7px;
+  border-radius: 5px; flex-shrink: 0; margin-top: 2px;
+}
+.qText { font-size: 13px; font-weight: 600; }
+.qType { font-size: 11px; color: var(--color-text-3); margin-top: 2px; }
+
+.qOptions { display: flex; gap: 10px; align-items: center; }
+.answersGrid { display: flex; flex-direction: column; gap: 8px; }
+.answerRow { display: flex; align-items: center; gap: 8px; }
+.answerCheck { width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+.hint { font-size: 11px; color: var(--color-text-3); }

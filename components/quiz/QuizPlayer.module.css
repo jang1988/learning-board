@@ -1,0 +1,202 @@
+.wrap {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  max-width: 700px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.qCounter {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 2px;
+}
+
+.quizTitle {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.timer {
+  padding: 6px 14px;
+  background: var(--color-surface-2);
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--color-text-2);
+  flex-shrink: 0;
+}
+
+.timerWarn {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .6; }
+}
+
+.question { margin-bottom: 20px; }
+
+.questionText {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--color-text-3);
+  font-weight: 500;
+}
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.answerBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font);
+  transition: border-color .15s, background .15s;
+  line-height: 1.4;
+}
+
+.answerBtn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.selected {
+  border-color: var(--color-primary) !important;
+  background: var(--color-primary-light) !important;
+}
+
+.answerCheck {
+  font-size: 16px;
+  color: var(--color-border-strong);
+  flex-shrink: 0;
+  width: 20px;
+}
+
+.checkSelected { color: var(--color-primary); }
+
+.textAnswer {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-family: var(--font);
+  color: var(--color-text);
+  background: var(--color-bg);
+  resize: vertical;
+  margin-bottom: 28px;
+  transition: border-color .15s;
+}
+
+.textAnswer:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-border);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background .15s, transform .15s;
+}
+
+.dot:hover { transform: scale(1.3); }
+.dotCurrent { background: var(--color-primary); transform: scale(1.2); }
+.dotAnswered { background: var(--color-accent); }
+.dotCurrent.dotAnswered { background: var(--color-primary); }
+
+.prevBtn, .nextBtn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background .15s;
+  flex-shrink: 0;
+}
+
+.prevBtn {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-2);
+}
+.prevBtn:hover { background: var(--color-border); }
+.prevBtn:disabled { opacity: .4; cursor: default; }
+
+.nextBtn {
+  background: var(--color-primary);
+  border: none;
+  color: #fff;
+}
+.nextBtn:hover { background: var(--color-primary-hover); }
+
+.submitBtn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  background: var(--color-accent);
+  border: none;
+  color: #fff;
+  flex-shrink: 0;
+  transition: opacity .15s;
+}
+.submitBtn:hover { opacity: .85; }
+.submitBtn:disabled { opacity: .5; cursor: default; }

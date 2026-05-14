@@ -1,0 +1,11 @@
+.page { padding: 28px; max-width: 760px; }
+.header { margin-bottom: 20px; }
+.attempt {
+  display: inline-flex;
+  padding: 6px 14px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 700;
+}

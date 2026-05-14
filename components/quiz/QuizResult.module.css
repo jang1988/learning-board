@@ -1,0 +1,114 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 28px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  border: 4px solid;
+}
+
+.circlePass {
+  border-color: var(--color-accent);
+  background: var(--color-accent-light);
+}
+
+.circleFail {
+  border-color: var(--color-danger);
+  background: var(--color-danger-light);
+}
+
+.circleIcon {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.circlePass .circleIcon { color: var(--color-accent); }
+.circleFail .circleIcon { color: var(--color-danger); }
+
+.circleScore {
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.circlePass .circleScore { color: #059669; }
+.circleFail .circleScore { color: var(--color-danger); }
+
+.circleLabel {
+  font-size: 11px;
+  color: var(--color-text-3);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.sub {
+  font-size: 14px;
+  color: var(--color-text-2);
+  line-height: 1.6;
+  max-width: 320px;
+  margin-bottom: 28px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.retryBtn, .backBtn, .homeBtn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity .15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.retryBtn {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+}
+
+.backBtn {
+  background: var(--color-surface-2);
+  color: var(--color-text-2);
+  border: 1px solid var(--color-border);
+}
+
+.homeBtn {
+  background: var(--color-surface-2);
+  color: var(--color-text-2);
+  border: 1px solid var(--color-border);
+}
+
+.retryBtn:hover, .backBtn:hover, .homeBtn:hover { opacity: .8; }
