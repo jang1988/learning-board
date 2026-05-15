@@ -11,11 +11,7 @@ export default async function ManagerResults() {
 	if (!user) redirect('/auth/login')
 
 	// Профіль
-	const { data: profile } = await supabase
-		.from('profiles')
-		.select('*')
-		.eq('id', user.id)
-		.single()
+	const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
 
 	// === Теми + уроки + прогрес (основний запит) ===
 	const { data: topicsRaw } = await supabase
@@ -47,11 +43,7 @@ export default async function ManagerResults() {
 		const lessonsDone = completedLessonsData.length
 
 		const status =
-			lessonsDone === 0
-				? 'not_started'
-				: lessonsDone === lessonsTotal
-					? 'completed'
-					: 'in_progress'
+			lessonsDone === 0 ? 'not_started' : lessonsDone === lessonsTotal ? 'completed' : 'in_progress'
 
 		const pct = lessonsTotal > 0 ? Math.round((lessonsDone / lessonsTotal) * 100) : 0
 
@@ -61,7 +53,7 @@ export default async function ManagerResults() {
 				? completedLessonsData.sort(
 						(a: any, b: any) =>
 							new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime()
-				  )[0].completed_at
+					)[0].completed_at
 				: null
 
 		return {
@@ -96,18 +88,31 @@ export default async function ManagerResults() {
 
 	// === Підрахунок статистики ===
 	const totalTopics = enrichedTopics.length
+
 	const completedTopics = enrichedTopics.filter(t => t.status === 'completed').length
+
 	const inProgressTopics = enrichedTopics.filter(t => t.status === 'in_progress').length
+
 	const requiredTopics = enrichedTopics.filter(t => t.is_required).length
+
 	const completedRequired = enrichedTopics.filter(
 		t => t.is_required && t.status === 'completed'
 	).length
 
-	const totalQuizzes = quizResults?.length ?? 0
-	const passedQuizzes = quizResults?.filter(r => r.passed).length ?? 0
+	// ✅ pending не враховуємо як "не здано"
+	const checkedResults = quizResults?.filter(r => r.status !== 'pending') ?? []
+
+	const pendingQuizzes = quizResults?.filter(r => r.status === 'pending').length ?? 0
+
+	const totalQuizzes = checkedResults.length
+
+	const passedQuizzes = checkedResults.filter(r => r.passed).length
+
+	const failedQuizzes = checkedResults.filter(r => !r.passed).length
+
 	const avgScore =
-		totalQuizzes > 0
-			? Math.round(quizResults!.reduce((s, r) => s + r.percent, 0) / totalQuizzes)
+		checkedResults.length > 0
+			? Math.round(checkedResults.reduce((s, r) => s + r.percent, 0) / checkedResults.length)
 			: 0
 
 	// Найкращі результати по кожному тесту
@@ -150,7 +155,10 @@ export default async function ManagerResults() {
 						{completedRequired} з {requiredTopics} обов'язкових тем пройдено
 					</div>
 					<div className={styles.overallBar}>
-						<div className="progress-bar" style={{ height: 10, borderRadius: 99 }}>
+						<div
+							className="progress-bar"
+							style={{ height: 10, borderRadius: 99 }}
+						>
 							<div
 								className={`progress-bar__fill ${overallPct === 100 ? 'progress-bar__fill--success' : ''}`}
 								style={{ width: `${overallPct}%` }}
@@ -159,13 +167,19 @@ export default async function ManagerResults() {
 					</div>
 					<div className={styles.overallStats}>
 						<div className={styles.oStat}>
-							<span className={styles.oNum} style={{ color: 'var(--color-accent)' }}>
+							<span
+								className={styles.oNum}
+								style={{ color: 'var(--color-accent)' }}
+							>
 								{completedTopics}
 							</span>
 							<span className={styles.oLabel}>Завершено</span>
 						</div>
 						<div className={styles.oStat}>
-							<span className={styles.oNum} style={{ color: 'var(--color-primary)' }}>
+							<span
+								className={styles.oNum}
+								style={{ color: 'var(--color-primary)' }}
+							>
 								{inProgressTopics}
 							</span>
 							<span className={styles.oLabel}>В процесі</span>
@@ -227,7 +241,10 @@ export default async function ManagerResults() {
 									<div className={styles.topicRight}>
 										{status !== 'not_started' && (
 											<div className={styles.topicBarWrap}>
-												<div className="progress-bar" style={{ width: 80 }}>
+												<div
+													className="progress-bar"
+													style={{ width: 80 }}
+												>
 													<div
 														className={`progress-bar__fill ${
 															status === 'completed' ? 'progress-bar__fill--success' : ''
@@ -262,47 +279,110 @@ export default async function ManagerResults() {
 					{/* Тести */}
 					<section className={styles.section}>
 						<h2 className={styles.sectionTitle}>Тести</h2>
+
 						<div className={styles.quizSummary}>
-							<div className={styles.qStat}>
-								<span className={styles.qNum}>{passedQuizzes}</span>
-								<span className={styles.qLabel}>здано</span>
-							</div>
-							<div className={styles.qDivider} />
-							<div className={styles.qStat}>
-								<span className={styles.qNum}>{totalQuizzes - passedQuizzes}</span>
-								<span className={styles.qLabel}>не здано</span>
-							</div>
-							<div className={styles.qDivider} />
 							<div className={styles.qStat}>
 								<span
 									className={styles.qNum}
-									style={{ color: avgScore >= 70 ? 'var(--color-accent)' : 'var(--color-danger)' }}
+									style={{ color: 'var(--color-accent)' }}
+								>
+									{passedQuizzes}
+								</span>
+
+								<span className={styles.qLabel}>здано</span>
+							</div>
+
+							<div className={styles.qDivider} />
+
+							<div className={styles.qStat}>
+								<span
+									className={styles.qNum}
+									style={{ color: 'var(--color-danger)' }}
+								>
+									{failedQuizzes}
+								</span>
+
+								<span className={styles.qLabel}>не здано</span>
+							</div>
+
+							<div className={styles.qDivider} />
+
+							<div className={styles.qStat}>
+								<span
+									className={styles.qNum}
+									style={{ color: '#D97706' }}
+								>
+									{pendingQuizzes}
+								</span>
+
+								<span className={styles.qLabel}>очікують</span>
+							</div>
+
+							<div className={styles.qDivider} />
+
+							<div className={styles.qStat}>
+								<span
+									className={styles.qNum}
+									style={{
+										color: avgScore >= 70 ? 'var(--color-accent)' : 'var(--color-danger)'
+									}}
 								>
 									{avgScore > 0 ? `${avgScore}%` : '—'}
 								</span>
+
 								<span className={styles.qLabel}>середній</span>
 							</div>
 						</div>
 
 						<div className={styles.quizList}>
-							{Object.values(bestResults).map(r => (
-								<div key={r.id} className={styles.quizRow}>
-									<div className={styles.quizInfo}>
-										<div className={styles.quizTopic}>{(r.quizzes as any)?.topics?.title}</div>
-										<div className={styles.quizName}>{(r.quizzes as any)?.title}</div>
-									</div>
-									<div className={styles.quizRight}>
-										<span
-											className={`${styles.quizScore} ${r.passed ? styles.scorePassed : styles.scoreFailed}`}
+							{Object.values(bestResults).map(r => {
+								const isPending = r.status === 'pending'
+
+								if (isPending) {
+									return (
+										<div
+											key={r.id}
+											className={styles.quizPending}
 										>
-											{r.percent}%
-										</span>
-										<span className={`badge ${r.passed ? 'badge--green' : 'badge--red'}`}>
-											{r.passed ? 'Здано' : 'Не зданий'}
-										</span>
+											<div className={styles.quizPendingIcon}>⏳</div>
+
+											<div className={styles.quizPendingText}>Тест очікує перевірки</div>
+
+											<div className={styles.quizPendingSub}>
+												Менеджер перевірить ваші відповіді найближчим часом
+											</div>
+										</div>
+									)
+								}
+
+								return (
+									<div
+										key={r.id}
+										className={styles.quizRow}
+									>
+										<div className={styles.quizInfo}>
+											<div className={styles.quizTopic}>{(r.quizzes as any)?.topics?.title}</div>
+
+											<div className={styles.quizName}>{(r.quizzes as any)?.title}</div>
+										</div>
+
+										<div className={styles.quizRight}>
+											<span
+												className={`${styles.quizScore} ${
+													r.passed ? styles.scorePassed : styles.scoreFailed
+												}`}
+											>
+												{r.percent}%
+											</span>
+
+											<span className={`badge ${r.passed ? 'badge--green' : 'badge--red'}`}>
+												{r.passed ? 'Здано' : 'Не здано'}
+											</span>
+										</div>
 									</div>
-								</div>
-							))}
+								)
+							})}
+
 							{Object.keys(bestResults).length === 0 && (
 								<div className={styles.empty}>Тести ще не проходили</div>
 							)}
@@ -313,32 +393,56 @@ export default async function ManagerResults() {
 					{quizResults && quizResults.length > 0 && (
 						<section className={styles.section}>
 							<h2 className={styles.sectionTitle}>Історія спроб</h2>
+
 							<div className={styles.historyList}>
-								{quizResults.slice(0, 10).map(r => (
-									<div key={r.id} className={styles.historyRow}>
-										<div className={styles.historyLeft}>
-											<span
-												className={`${styles.historyDot} ${r.passed ? styles.dotGreen : styles.dotRed}`}
-											/>
-											<div>
-												<div className={styles.historyQuiz}>{(r.quizzes as any)?.title}</div>
-												<div className={styles.historyDate}>
-													{new Date(r.submitted_at).toLocaleDateString('ru-RU', {
-														day: '2-digit',
-														month: 'short',
-														year: 'numeric'
-													})}{' '}
-													· спроба #{r.attempt_num}
+								{quizResults.slice(0, 10).map(r => {
+									const isPending = r.status === 'pending'
+
+									return (
+										<div
+											key={r.id}
+											className={styles.historyRow}
+										>
+											<div className={styles.historyLeft}>
+												<span
+													className={`${styles.historyDot} ${
+														isPending
+															? styles.dotPending
+															: r.passed
+																? styles.dotGreen
+																: styles.dotRed
+													}`}
+												/>
+
+												<div>
+													<div className={styles.historyQuiz}>{(r.quizzes as any)?.title}</div>
+
+													<div className={styles.historyDate}>
+														{new Date(r.submitted_at).toLocaleDateString('ru-RU', {
+															day: '2-digit',
+															month: 'short',
+															year: 'numeric'
+														})}
+														{' · '}
+														спроба #{r.attempt_num}
+													</div>
 												</div>
 											</div>
+
+											{isPending ? (
+												<span className={styles.historyPending}>⏳ Очікує</span>
+											) : (
+												<span
+													className={`${styles.historyScore} ${
+														r.passed ? styles.scorePassed : styles.scoreFailed
+													}`}
+												>
+													{r.percent}%
+												</span>
+											)}
 										</div>
-										<span
-											className={`${styles.historyScore} ${r.passed ? styles.scorePassed : styles.scoreFailed}`}
-										>
-											{r.percent}%
-										</span>
-									</div>
-								))}
+									)
+								})}
 							</div>
 						</section>
 					)}
@@ -347,11 +451,17 @@ export default async function ManagerResults() {
 
 			{/* Нещодавно завершені уроки */}
 			{lessonProgress && lessonProgress.length > 0 && (
-				<section className={styles.section} style={{ marginTop: 20 }}>
+				<section
+					className={styles.section}
+					style={{ marginTop: 20 }}
+				>
 					<h2 className={styles.sectionTitle}>Нещодавно переглянуті уроки</h2>
 					<div className={styles.lessonGrid}>
 						{lessonProgress.slice(0, 6).map((lp, i) => (
-							<div key={i} className={styles.lessonChip}>
+							<div
+								key={i}
+								className={styles.lessonChip}
+							>
 								<span className={styles.lessonChipIcon}>✓</span>
 								<div>
 									<div className={styles.lessonChipTitle}>{(lp.lessons as any)?.title}</div>

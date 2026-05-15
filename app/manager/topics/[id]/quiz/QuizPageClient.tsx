@@ -13,36 +13,22 @@ interface Props {
   attemptsLeft: number
 }
 
-interface QuizResultType {
+interface ResultType {
   passed: boolean
   percent: number
-  pending?: boolean
+  pending: boolean
 }
 
-export default function QuizPageClient({
-  quiz,
-  userId,
-  topicId,
-  attemptNum,
-  attemptsLeft,
-}: Props) {
-  const [result, setResult] = useState<QuizResultType | null>(null)
-
-  const [currentAttempt, setCurrentAttempt] =
-    useState(attemptNum)
-
+export default function QuizPageClient({ quiz, userId, topicId, attemptNum, attemptsLeft }: Props) {
+  const [result, setResult] = useState<ResultType | null>(null)
+  const [currentAttempt, setCurrentAttempt] = useState(attemptNum)
   const [retrying, setRetrying] = useState(false)
 
   const handleRetry = () => {
     setResult(null)
-
     setCurrentAttempt(prev => prev + 1)
-
     setRetrying(true)
-
-    setTimeout(() => {
-      setRetrying(false)
-    }, 100)
+    setTimeout(() => setRetrying(false), 100)
   }
 
   if (result) {
@@ -56,9 +42,7 @@ export default function QuizPageClient({
           topicId={topicId}
           attemptsLeft={attemptsLeft}
           onRetry={
-            attemptsLeft > 0 &&
-            !result.passed &&
-            !result.pending
+            attemptsLeft > 0 && !result.passed && !result.pending
               ? handleRetry
               : undefined
           }
@@ -67,19 +51,15 @@ export default function QuizPageClient({
     )
   }
 
-  if (retrying) {
-    return null
-  }
+  if (retrying) return null
 
   return (
     <div className={styles.page}>
       <div className={styles.header}>
         <div className={styles.attempt}>
-          Попытка {currentAttempt} из{' '}
-          {quiz.max_attempts}
+          Спроба {currentAttempt} з {quiz.max_attempts}
         </div>
       </div>
-
       <QuizPlayer
         quiz={quiz}
         userId={userId}

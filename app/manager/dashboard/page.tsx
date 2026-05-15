@@ -211,23 +211,30 @@ export default async function ManagerDashboard() {
 
 					{recentResults && recentResults.length > 0 ? (
 						<div className={styles.resultList}>
-							{recentResults.map(r => (
-								<div
-									key={r.id}
-									className={styles.resultCard}
-								>
-									<div className={styles.resultInfo}>
-										<div className={styles.resultTopic}>{(r.quizzes as any)?.topics?.title}</div>
-										<div className={styles.resultQuiz}>{(r.quizzes as any)?.title}</div>
-									</div>
-
+							{recentResults.map(r => {
+								const isPending = r.status === 'pending'
+								return (
 									<div
-										className={`${styles.resultScore} ${r.passed ? styles.passed : styles.failed}`}
+										key={r.id}
+										className={styles.resultCard}
 									>
-										{r.percent}%
+										<div className={styles.resultInfo}>
+											<div className={styles.resultTopic}>{(r.quizzes as any)?.topics?.title}</div>
+											<div className={styles.resultQuiz}>{(r.quizzes as any)?.title}</div>
+											{isPending && <div className={styles.resultPending}>⏳ Очікує перевірки</div>}
+										</div>
+										{isPending ? (
+											<div className={styles.resultScorePending}>⏳</div>
+										) : (
+											<div
+												className={`${styles.resultScore} ${r.passed ? styles.passed : styles.failed}`}
+											>
+												{r.percent}%
+											</div>
+										)}
 									</div>
-								</div>
-							))}
+								)
+							})}
 						</div>
 					) : (
 						<div className={styles.empty}>

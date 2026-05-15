@@ -1,202 +1,430 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Quiz, Question, QuizAnswer } from '@/types'
 import styles from './QuizPlayer.module.css'
 
-interface QuizPlayerProps {
-  quiz: Quiz & { questions: (Question & { answers: { id: string; text: string; order_index: number }[] })[] }
-  userId: string
-  attemptNum: number
-  onFinish: (result: { passed: boolean; percent: number }) => void
+interface Props {
+	quiz: any
+	userId: string
+	attemptNum: number
+	onFinish: (result: {
+		passed: boolean
+		percent: number
+		pending: boolean
+	}) => void
 }
 
-export default function QuizPlayer({ quiz, userId, attemptNum, onFinish }: QuizPlayerProps) {
-  const [current, setCurrent] = useState(0)
-  const [userAnswers, setUserAnswers] = useState<Record<string, string[]>>({})
-  const [timeLeft, setTimeLeft] = useState(quiz.time_limit_sec ?? null)
-  const [submitting, setSubmitting] = useState(false)
+export default function QuizPlayer({
+	quiz,
+	userId,
+	attemptNum,
+	onFinish
+}: Props) {
+	const questions = quiz.questions ?? []
 
-  const questions = quiz.questions ?? []
-  const question = questions[current]
+	const QUESTION_TIME = 10 // 1 хвилина на питання
 
-  const handleSubmit = useCallback(async () => {
-    if (submitting) return
-    setSubmitting(true)
-    const supabase = createClient()
+	const [current, setCurrent] = useState(0)
 
-    // Загружаем правильные ответы
-    const { data: allAnswers } = await supabase
-      .from('answers')
-      .select('id, question_id, is_correct')
-      .in('question_id', questions.map(q => q.id))
+	const [userAnswers, setUserAnswers] = useState<
+		Record<string, string[]>
+	>({})
 
-    let totalPoints = 0
-    let earnedPoints = 0
+	const [questionTimeLeft, setQuestionTimeLeft] =
+		useState(QUESTION_TIME)
 
-    for (const q of questions) {
-      totalPoints += q.points
-      const correctIds = (allAnswers ?? [])
-        .filter(a => a.question_id === q.id && a.is_correct)
-        .map(a => a.id)
-      const chosen = userAnswers[q.id] ?? []
+	const [submitting, setSubmitting] = useState(false)
 
-      if (q.type === 'single' || q.type === 'multiple') {
-        const correct = correctIds.sort().join(',') === chosen.sort().join(',')
-        if (correct) earnedPoints += q.points
-      } else if (q.type === 'text') {
-        // Text answers — admin reviews manually, give partial credit
-        if (chosen.length > 0 && chosen[0].trim().length > 0) earnedPoints += q.points
-      }
-    }
+	const [visitedQuestions, setVisitedQuestions] = useState<number[]>([0])
 
-    const percent = totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0
-    const passed = percent >= quiz.passing_score
+	const question = questions[current]
 
-    await supabase.from('quiz_results').insert({
-      user_id: userId,
-      quiz_id: quiz.id,
-      score: earnedPoints,
-      max_score: totalPoints,
-      percent,
-      passed,
-      attempt_num: attemptNum,
-      time_spent_sec: quiz.time_limit_sec ? quiz.time_limit_sec - (timeLeft ?? 0) : null,
-    })
+	const spentTime = useMemo(() => {
+		return (
+			current * QUESTION_TIME +
+			(QUESTION_TIME - questionTimeLeft)
+		)
+	}, [current, questionTimeLeft])
 
-    onFinish({ passed, percent })
-  }, [submitting, questions, userAnswers, quiz, userId, attemptNum, timeLeft, onFinish])
+	// Формат часу
+	const formatTime = (sec: number) =>
+		`${Math.floor(sec / 60)}:${(sec % 60)
+			.toString()
+			.padStart(2, '0')}`
 
-  // Таймер
-  useEffect(() => {
-    if (!timeLeft) return
-    if (timeLeft <= 0) { handleSubmit(); return }
-    const t = setTimeout(() => setTimeLeft(s => (s ?? 1) - 1), 1000)
-    return () => clearTimeout(t)
-  }, [timeLeft, handleSubmit])
+	// Перехід до наступного питання
+	const goNext = useCallback(() => {
+		if (current >= questions.length - 1) return
 
-  const toggleAnswer = (answerId: string) => {
-    const qid = question.id
-    setUserAnswers(prev => {
-      const current = prev[qid] ?? []
-      if (question.type === 'single') {
-        return { ...prev, [qid]: [answerId] }
-      }
-      const next = current.includes(answerId)
-        ? current.filter(id => id !== answerId)
-        : [...current, answerId]
-      return { ...prev, [qid]: next }
-    })
-  }
+		const nextIndex = current + 1
 
-  const setTextAnswer = (text: string) => {
-    setUserAnswers(prev => ({ ...prev, [question.id]: [text] }))
-  }
+		setCurrent(nextIndex)
+		setQuestionTimeLeft(QUESTION_TIME)
 
-  const chosen = userAnswers[question?.id] ?? []
-  const progress = ((current + 1) / questions.length) * 100
+		setVisitedQuestions(prev =>
+			prev.includes(nextIndex)
+				? prev
+				: [...prev, nextIndex]
+		)
+	}, [current, questions.length])
 
-  const formatTime = (sec: number) => {
-    const m = Math.floor(sec / 60)
-    const s = sec % 60
-    return `${m}:${s.toString().padStart(2, '0')}`
-  }
+	// Submit тесту
+	const handleSubmit = useCallback(async () => {
+		if (submitting) return
 
-  return (
-    <div className={styles.wrap}>
-      {/* Header */}
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <div className={styles.qCounter}>Питання {current + 1} з {questions.length}</div>
-          <div className={styles.quizTitle}>{quiz.title}</div>
-        </div>
-        {timeLeft !== null && (
-          <div className={`${styles.timer} ${timeLeft < 60 ? styles.timerWarn : ''}`}>
-            ⏱ {formatTime(timeLeft)}
-          </div>
-        )}
-      </div>
+		setSubmitting(true)
 
-      {/* Progress bar */}
-      <div className="progress-bar" style={{ marginBottom: 24 }}>
-        <div className="progress-bar__fill" style={{ width: `${progress}%` }} />
-      </div>
+		const supabase = createClient()
 
-      {/* Question */}
-      <div className={styles.question}>
-        <p className={styles.questionText}>{question?.text}</p>
-        {question?.type === 'multiple' && (
-          <p className={styles.hint}>Виберіть усі відповідні варіанти</p>
-        )}
-      </div>
+		const autoQuestions = questions.filter(
+			(q: any) => q.type !== 'text'
+		)
 
-      {/* Answers */}
-      {question?.type !== 'text' ? (
-        <div className={styles.answers}>
-          {question?.answers?.map(answer => {
-            const selected = chosen.includes(answer.id)
-            return (
-              <button
-                key={answer.id}
-                className={`${styles.answerBtn} ${selected ? styles.selected : ''}`}
-                onClick={() => toggleAnswer(answer.id)}
-              >
-                <span className={`${styles.answerCheck} ${selected ? styles.checkSelected : ''}`}>
-                  {question.type === 'single' ? (selected ? '●' : '○') : (selected ? '▪' : '□')}
-                </span>
-                {answer.text}
-              </button>
-            )
-          })}
-        </div>
-      ) : (
-        <textarea
-          className={styles.textAnswer}
-          placeholder="Введіть вашу відповідь..."
-          value={chosen[0] ?? ''}
-          onChange={e => setTextAnswer(e.target.value)}
-          rows={4}
-        />
-      )}
+		const textQuestions = questions.filter(
+			(q: any) => q.type === 'text'
+		)
 
-      {/* Navigation */}
-      <div className={styles.nav}>
-        <button
-          className={styles.prevBtn}
-          onClick={() => setCurrent(c => c - 1)}
-          disabled={current === 0}
-        >
-          ← Назад
-        </button>
+		let allAnswers: any[] = []
 
-        <div className={styles.dots}>
-          {questions.map((_, i) => (
-            <button
-              key={i}
-              className={`${styles.dot} ${i === current ? styles.dotCurrent : ''} ${userAnswers[questions[i].id]?.length > 0 ? styles.dotAnswered : ''}`}
-              onClick={() => setCurrent(i)}
-            />
-          ))}
-        </div>
+		if (autoQuestions.length > 0) {
+			const { data } = await supabase
+				.from('answers')
+				.select('id, question_id, is_correct')
+				.in(
+					'question_id',
+					autoQuestions.map((q: any) => q.id)
+				)
 
-        {current < questions.length - 1 ? (
-          <button
-            className={styles.nextBtn}
-            onClick={() => setCurrent(c => c + 1)}
-          >
-            Далее →
-          </button>
-        ) : (
-          <button
-            className={styles.submitBtn}
-            onClick={handleSubmit}
-            disabled={submitting}
-          >
-            {submitting ? 'Надсилання...' : 'Завершити тест'}
-          </button>
-        )}
-      </div>
-    </div>
-  )
+			allAnswers = data ?? []
+		}
+
+		let autoEarned = 0
+		let autoTotal = 0
+
+		for (const q of autoQuestions) {
+			autoTotal += q.points
+
+			const correctIds = allAnswers
+				.filter(
+					(a: any) =>
+						a.question_id === q.id &&
+						a.is_correct
+				)
+				.map((a: any) => a.id)
+				.sort()
+
+			const chosen = (
+				userAnswers[q.id] ?? []
+			).sort()
+
+			if (
+				correctIds.join(',') ===
+				chosen.join(',')
+			) {
+				autoEarned += q.points
+			}
+		}
+
+		const totalPoints = questions.reduce(
+			(sum: number, q: any) =>
+				sum + (q.points ?? 1),
+			0
+		)
+
+		const percent =
+			totalPoints > 0
+				? Math.round(
+						(autoEarned / totalPoints) * 100
+				  )
+				: 0
+
+		const filledText = textQuestions.filter(
+			(q: any) =>
+				userAnswers[q.id]?.[0]
+					?.trim()
+					.length > 0
+		)
+
+		const pending = filledText.length > 0
+
+		const passed =
+			!pending &&
+			percent >= quiz.passing_score
+
+		const { data: quizResult } =
+			await supabase
+				.from('quiz_results')
+				.insert({
+					user_id: userId,
+					quiz_id: quiz.id,
+					score: autoEarned,
+					max_score: totalPoints,
+					percent,
+					passed,
+					attempt_num: attemptNum,
+					status: pending
+						? 'pending'
+						: 'reviewed',
+					time_spent_sec: spentTime
+				})
+				.select('id')
+				.single()
+
+		// Текстові відповіді
+		if (quizResult && filledText.length > 0) {
+			await supabase
+				.from('text_answers')
+				.insert(
+					filledText.map((q: any) => ({
+						quiz_result_id:
+							quizResult.id,
+						question_id: q.id,
+						user_id: userId,
+						answer_text:
+							userAnswers[q.id][0].trim(),
+						is_correct: null
+					}))
+				)
+		}
+
+		onFinish({
+			passed,
+			percent,
+			pending
+		})
+	}, [
+		submitting,
+		questions,
+		userAnswers,
+		quiz,
+		userId,
+		attemptNum,
+		spentTime,
+		onFinish
+	])
+
+	// Таймер питання
+	useEffect(() => {
+		if (submitting) return
+
+		// Час вийшов
+		if (questionTimeLeft <= 0) {
+			if (current === questions.length - 1) {
+				handleSubmit()
+			} else {
+				goNext()
+			}
+			return
+		}
+
+		const timer = setTimeout(() => {
+			setQuestionTimeLeft(prev => prev - 1)
+		}, 1000)
+
+		return () => clearTimeout(timer)
+	}, [
+		questionTimeLeft,
+		current,
+		questions.length,
+		handleSubmit,
+		goNext,
+		submitting
+	])
+
+	// Вибір відповіді
+	const toggleAnswer = (answerId: string) => {
+		const qid = question.id
+
+		setUserAnswers(prev => {
+			const currentAnswers = prev[qid] ?? []
+
+			// SINGLE
+			if (question.type === 'single') {
+				return {
+					...prev,
+					[qid]: [answerId]
+				}
+			}
+
+			// MULTIPLE
+			const next = currentAnswers.includes(
+				answerId
+			)
+				? currentAnswers.filter(
+						(id: string) =>
+							id !== answerId
+				  )
+				: [...currentAnswers, answerId]
+
+			return {
+				...prev,
+				[qid]: next
+			}
+		})
+	}
+
+	const chosen =
+		userAnswers[question?.id] ?? []
+
+	return (
+		<div className={styles.wrap}>
+			{/* HEADER */}
+			<div className={styles.header}>
+				<div className={styles.headerLeft}>
+					<div className={styles.qCounter}>
+						Питання {current + 1} з{' '}
+						{questions.length}
+					</div>
+
+					<div className={styles.quizTitle}>
+						{quiz.title}
+					</div>
+				</div>
+
+				<div className={styles.timerGroup}>
+					{/* Таймер питання */}
+					<div
+						className={`${styles.timer} ${
+							questionTimeLeft <= 15
+								? styles.timerWarn
+								: ''
+						}`}
+					>
+						⏱ {formatTime(questionTimeLeft)}
+					</div>
+				</div>
+			</div>
+
+			{/* Progress */}
+			<div
+				className="progress-bar"
+				style={{ marginBottom: 24 }}
+			>
+				<div
+					className="progress-bar__fill"
+					style={{
+						width: `${
+							((current + 1) /
+								questions.length) *
+							100
+						}%`
+					}}
+				/>
+			</div>
+
+			{/* QUESTION */}
+			<div className={styles.question}>
+				<p className={styles.questionText}>
+					{question?.text}
+				</p>
+
+				{question?.type === 'multiple' && (
+					<p className={styles.hint}>
+						Виберіть усі правильні
+						варіанти
+					</p>
+				)}
+
+				{question?.type === 'text' && (
+					<p className={styles.hint}>
+						✏️ Відповідь перевіряється
+						адміністратором
+					</p>
+				)}
+			</div>
+
+			{/* ANSWERS */}
+			{question?.type !== 'text' ? (
+				<div className={styles.answers}>
+					{question?.answers?.map(
+						(answer: any) => {
+							const selected =
+								chosen.includes(
+									answer.id
+								)
+
+							return (
+								<button
+									key={answer.id}
+									type="button"
+									className={`${styles.answerBtn} ${
+										selected
+											? styles.selected
+											: ''
+									}`}
+									onClick={() =>
+										toggleAnswer(
+											answer.id
+										)
+									}
+								>
+									<span
+										className={`${
+											styles.answerCheck
+										} ${
+											selected
+												? styles.checkSelected
+												: ''
+										}`}
+									>
+										{question.type ===
+										'single'
+											? selected
+												? '●'
+												: '○'
+											: selected
+												? '✓'
+												: '□'}
+									</span>
+
+									{answer.text}
+								</button>
+							)
+						}
+					)}
+				</div>
+			) : (
+				<textarea
+					className={styles.textAnswer}
+					placeholder="Введіть вашу відповідь..."
+					value={chosen[0] ?? ''}
+					onChange={e =>
+						setUserAnswers(prev => ({
+							...prev,
+							[question.id]: [
+								e.target.value
+							]
+						}))
+					}
+					rows={5}
+				/>
+			)}
+
+			{/* NAV */}
+			<div className={styles.nav}>
+
+				{/* NEXT / SUBMIT */}
+				{current <
+				questions.length - 1 ? (
+					<button
+						className={styles.nextBtn}
+						onClick={goNext}
+					>
+						Далі →
+					</button>
+				) : (
+					<button
+						className={styles.submitBtn}
+						onClick={handleSubmit}
+						disabled={submitting}
+					>
+						{submitting
+							? 'Надсилання...'
+							: 'Завершити тест'}
+					</button>
+				)}
+			</div>
+		</div>
+	)
 }

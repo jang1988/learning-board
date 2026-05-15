@@ -34,8 +34,9 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
     .from('quizzes')
     .select(`*, questions(count)`)
     .eq('topic_id', id)
-    .single()
+    .maybeSingle()
 
+  // Последний результат теста
   const { data: quizResult } = await supabase
     .from('quiz_results')
     .select('*')
@@ -45,18 +46,17 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
     .limit(1)
     .maybeSingle()
 
-  const { data: topicProgress } = await supabase
-    .from('topic_progress')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('topic_id', id)
-    .maybeSingle()
-
-  const lessonsTotal = lessons?.length ?? 0
-  const lessonsDone = lessons?.filter(l => l.lesson_progress?.[0]?.status === 'completed').length ?? 0
+  const lessonsTotal   = lessons?.length ?? 0
+  const lessonsDone    = lessons?.filter(l => l.lesson_progress?.[0]?.status === 'completed').length ?? 0
   const allLessonsDone = lessonsTotal > 0 && lessonsDone === lessonsTotal
-  const attemptsDone = quizResult ? quizResult.attempt_num : 0
+
+  const attemptsDone = quizResult?.attempt_num ?? 0
   const attemptsLeft = quiz ? (quiz.max_attempts - attemptsDone) : 0
+
+  // Флаги статуса теста
+  const isPending  = quizResult?.status === 'pending'   // ждёт проверки
+  const isReviewed = quizResult?.status === 'reviewed'  // проверен
+  const hasPassed  = quizResult?.passed === true
 
   return (
     <div className={styles.page}>
@@ -76,14 +76,15 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
           </div>
           {quiz && (
             <div className={styles.stat}>
-              <span className={styles.statNum}>{quizResult?.passed ? '✓' : quizResult ? quizResult.percent + '%' : '—'}</span>
+              <span className={styles.statNum}>
+                {isPending ? '⏳' : hasPassed ? '✓' : quizResult ? quizResult.percent + '%' : '—'}
+              </span>
               <span className={styles.statLabel}>тест</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Progress bar */}
       {lessonsTotal > 0 && (
         <div className={styles.progressWrap}>
           <div className={styles.progressInfo}>
@@ -100,7 +101,6 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
       )}
 
       <div className={styles.grid}>
-        {/* Lessons */}
         <div className={styles.lessons}>
           <h2 className={styles.sectionTitle}>Уроки</h2>
           <LessonList
@@ -111,7 +111,6 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
           />
         </div>
 
-        {/* Quiz card */}
         {quiz && (
           <div className={styles.quizCard}>
             <div className={styles.quizIcon}>📝</div>
@@ -124,27 +123,45 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
               )}
             </div>
 
-            {quizResult && (
-              <div className={`${styles.quizResult} ${quizResult.passed ? styles.passed : styles.failed}`}>
+            {/* Ожидает проверки */}
+            {isPending && (
+              <div className={styles.quizPending}>
+                <div className={styles.quizPendingIcon}>⏳</div>
+                <div className={styles.quizPendingText}>Очікує перевірки</div>
+                <div className={styles.quizPendingSub}>
+                  Адміністратор перевіряє текстові відповіді.
+                  Результат з'явиться після перевірки.
+                </div>
+              </div>
+            )}
+
+            {/* Результат после проверки */}
+            {isReviewed && quizResult && (
+              <div className={`${styles.quizResult} ${hasPassed ? styles.passed : styles.failed}`}>
                 <span className={styles.quizScore}>{quizResult.percent}%</span>
-                <span>{quizResult.passed ? '✓ Тест пройдено' : '✕ Не пройдено'}</span>
+                <span>{hasPassed ? '✓ Тест пройдено' : '✕ Не пройдено'}</span>
                 <span className={styles.quizAttempt}>Спроба #{quizResult.attempt_num}</span>
               </div>
             )}
 
-            {!allLessonsDone && !quizResult?.passed && (
+            {/* Нет попыток — заблокировано */}
+            {!allLessonsDone && !quizResult && (
               <div className={styles.quizLocked}>
                 🔒 Завершіть всі уроки, щоб розблокувати тест
               </div>
             )}
 
-            {(allLessonsDone || quizResult) && !quizResult?.passed && attemptsLeft > 0 && (
+            {/* Кнопка пройти/повторить — только если не pending и не passed */}
+            {!isPending && !hasPassed && (allLessonsDone || quizResult) && attemptsLeft > 0 && (
               <Link href={`/manager/topics/${id}/quiz`} className={styles.quizBtn}>
-                {quizResult ? `Спробувати знову (залишилося ${attemptsLeft})` : 'Пройти тест'}
+                {quizResult
+                  ? `Спробувати знову (залишилося ${attemptsLeft})`
+                  : 'Пройти тест'}
               </Link>
             )}
 
-            {attemptsLeft <= 0 && !quizResult?.passed && (
+            {/* Попытки кончились */}
+            {!isPending && !hasPassed && attemptsLeft <= 0 && quizResult && (
               <div className={styles.quizNoAttempts}>Спроби закінчились</div>
             )}
           </div>

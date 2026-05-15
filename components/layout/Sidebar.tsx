@@ -23,6 +23,7 @@ const adminNav: NavItem[] = [
 	{ href: '/admin/topics', label: 'Теми', icon: '▤' },
 	{ href: '/admin/users', label: 'Співробітники', icon: '◎' },
 	{ href: '/admin/reports', label: 'Звіти', icon: '↗' },
+	{ href: '/admin/text-answers', label: 'Перевірка', icon: '✏️' },
 ]
 
 interface SidebarProps {

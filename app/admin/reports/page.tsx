@@ -48,10 +48,20 @@ export default async function AdminReports() {
 		return { ...t, total, completed, inProgress }
 	})
 
-	const totalResults = results?.length ?? 0
-	const passedResults = results?.filter(r => r.passed).length ?? 0
+	const checkedResults = results?.filter((r: any) => r.status !== 'pending') ?? []
+
+	const pendingResults = results?.filter((r: any) => r.status === 'pending').length ?? 0
+
+	const totalResults = checkedResults.length
+
+	const passedResults = checkedResults.filter(r => r.passed).length ?? 0
+
+	const failedResults = checkedResults.filter(r => !r.passed).length ?? 0
+
 	const avgScore =
-		totalResults > 0 ? Math.round(results!.reduce((s, r) => s + r.percent, 0) / totalResults) : 0
+		totalResults > 0
+			? Math.round(checkedResults.reduce((s, r) => s + r.percent, 0) / totalResults)
+			: 0
 
 	return (
 		<div className={styles.page}>
@@ -82,13 +92,19 @@ export default async function AdminReports() {
 						className={styles.statNum}
 						style={{ color: 'var(--color-danger)' }}
 					>
-						{totalResults - passedResults}
+						{failedResults}
 					</div>
 					<div className={styles.statLabel}>Провалено</div>
 				</div>
 				<div className={styles.statCard}>
-					<div className={styles.statNum}>{avgScore}%</div>
-					<div className={styles.statLabel}>Середній бал</div>
+					<div
+						className={styles.statNum}
+						style={{ color: '#F59E0B' }}
+					>
+						{pendingResults}
+					</div>
+
+					<div className={styles.statLabel}>Очікують перевірки</div>
 				</div>
 				<div className={styles.statCard}>
 					<div className={styles.statNum}>
@@ -157,12 +173,27 @@ export default async function AdminReports() {
 									<div className={styles.rTopic}>{(r.quizzes as any)?.topics?.title}</div>
 								</div>
 								<div className={styles.rScore}>
-									<span className={`${styles.scoreNum} ${r.passed ? styles.pass : styles.fail}`}>
-										{r.percent}%
-									</span>
-									<span className={`badge ${r.passed ? 'badge--green' : 'badge--red'}`}>
-										{r.passed ? '✓' : '✕'}
-									</span>
+									{r.status === 'pending' ? (
+										<div
+											className={styles.scoreNum}
+											style={{ color: '#F59E0B' }}
+										>
+											<span>⏳</span>
+											<span>Очікує</span>
+										</div>
+									) : (
+										<>
+											<span
+												className={`${styles.scoreNum} ${r.passed ? styles.pass : styles.fail}`}
+											>
+												{r.percent}%
+											</span>
+
+											<span className={`badge ${r.passed ? 'badge--green' : 'badge--red'}`}>
+												{r.passed ? '✓' : '✕'}
+											</span>
+										</>
+									)}
 								</div>
 								<div className={styles.rDate}>
 									{new Date(r.submitted_at).toLocaleDateString('ru-RU', {

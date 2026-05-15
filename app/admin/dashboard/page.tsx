@@ -33,15 +33,20 @@ export default async function AdminDashboard() {
 		.from('topics')
 		.select('*', { count: 'exact', head: true })
 
-	const { data: quizStats } = await supabase.from('quiz_results').select('percent, passed')
+	const { data: quizStats } = await supabase.from('quiz_results').select('percent, passed, status')
+
+	const checkedQuizStats = quizStats?.filter((r: any) => r.status !== 'pending') ?? []
+
+	const pendingQuizStats = quizStats?.filter((r: any) => r.status === 'pending').length ?? 0
 
 	const avgScore =
-		quizStats && quizStats.length > 0
-			? Math.round(quizStats.reduce((s, r) => s + r.percent, 0) / quizStats.length)
+		checkedQuizStats.length > 0
+			? Math.round(checkedQuizStats.reduce((s, r) => s + r.percent, 0) / checkedQuizStats.length)
 			: 0
+
 	const passRate =
-		quizStats && quizStats.length > 0
-			? Math.round((quizStats.filter(r => r.passed).length / quizStats.length) * 100)
+		checkedQuizStats.length > 0
+			? Math.round((checkedQuizStats.filter(r => r.passed).length / checkedQuizStats.length) * 100)
 			: 0
 
 	// Сотрудники с прогрессом
@@ -143,6 +148,23 @@ export default async function AdminDashboard() {
 						<div className={styles.kpiLabel}>Здали тести</div>
 					</div>
 				</div>
+				<div className={styles.kpiCard}>
+					<div
+						className={styles.kpiIcon}
+						style={{
+							background: '#FFFBEB',
+							color: '#F59E0B'
+						}}
+					>
+						⏳
+					</div>
+
+					<div>
+						<div className={styles.kpiNum}>{pendingQuizStats}</div>
+
+						<div className={styles.kpiLabel}>Очікують перевірки</div>
+					</div>
+				</div>
 			</div>
 
 			<div className={styles.grid}>
@@ -213,6 +235,7 @@ export default async function AdminDashboard() {
 				<section className={styles.section}>
 					<div className={styles.sectionHeader}>
 						<h2 className={styles.sectionTitle}>Останні тести</h2>
+
 						<Link
 							href="/admin/reports"
 							className={styles.seeAll}
@@ -220,28 +243,60 @@ export default async function AdminDashboard() {
 							Звіти →
 						</Link>
 					</div>
+
 					<div className={styles.resultList}>
-						{recentResults?.map(r => (
-							<div
-								key={r.id}
-								className={styles.resultRow}
-							>
-								<div className={styles.resultUser}>
-									<div className={styles.resultName}>{(r.profiles as any)?.full_name}</div>
-									<div className={styles.resultMeta}>
-										{(r.quizzes as any)?.topics?.title} · {(r.quizzes as any)?.title}
+						{recentResults?.map(r => {
+							const isPending = r.status === 'pending'
+
+							if (isPending) {
+								return (
+									<div
+										key={r.id}
+										className={styles.quizPending}
+									>
+										<div className={styles.quizPendingIcon}>⏳</div>
+
+										<div className={styles.quizPendingText}>Тест очікує перевірки</div>
+
+										<div className={styles.quizPendingSub}>{(r.profiles as any)?.full_name}</div>
+
+										<div className={styles.quizPendingMeta}>
+											{(r.quizzes as any)?.topics?.title}
+											{' · '}
+											{(r.quizzes as any)?.title}
+										</div>
+									</div>
+								)
+							}
+
+							return (
+								<div
+									key={r.id}
+									className={styles.resultRow}
+								>
+									<div className={styles.resultUser}>
+										<div className={styles.resultName}>{(r.profiles as any)?.full_name}</div>
+
+										<div className={styles.resultMeta}>
+											{(r.quizzes as any)?.topics?.title}
+											{' · '}
+											{(r.quizzes as any)?.title}
+										</div>
+									</div>
+
+									<div className={styles.resultRight}>
+										<span className={`${styles.score} ${r.passed ? styles.pass : styles.fail}`}>
+											{r.percent}%
+										</span>
+
+										<span className={`badge ${r.passed ? 'badge--green' : 'badge--red'}`}>
+											{r.passed ? 'Здав' : 'Не здав'}
+										</span>
 									</div>
 								</div>
-								<div className={styles.resultRight}>
-									<span className={`${styles.score} ${r.passed ? styles.pass : styles.fail}`}>
-										{r.percent}%
-									</span>
-									<span className={`badge ${r.passed ? 'badge--green' : 'badge--red'}`}>
-										{r.passed ? 'Здав' : 'Не здав'}
-									</span>
-								</div>
-							</div>
-						))}
+							)
+						})}
+
 						{(!recentResults || recentResults.length === 0) && (
 							<div className={styles.empty}>Результатів поки що немає</div>
 						)}
