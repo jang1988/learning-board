@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Sidebar from '@/components/layout/Sidebar'
 import s from '@/components/layout/Sidebar.module.css'
+import DashboardShell from '@/components/layout/DashboardShell'
 
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -34,11 +35,8 @@ export default async function ManagerLayout({ children }: { children: React.Reac
 
   // Если вдруг admin зашёл на /manager — пустить, сайдбар покажет правильное меню
   return (
-    <div className={s.layout}>
-      <Sidebar profile={profile} />
-      <main className={s.main}>
-        {children}
-      </main>
-    </div>
+    <DashboardShell profile={profile}>
+			{children}
+		</DashboardShell>
   )
 }

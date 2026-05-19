@@ -193,7 +193,7 @@ export default async function ManagerResults() {
 						<div className={styles.oStat}>
 							<span
 								className={styles.oNum}
-								style={{ color: avgScore >= 70 ? 'var(--color-accent)' : 'var(--color-danger)' }}
+								style={{ color: avgScore >= 80 ? 'var(--color-accent)' : 'var(--color-danger)' }}
 							>
 								{avgScore > 0 ? `${avgScore}%` : '—'}
 							</span>
@@ -324,7 +324,7 @@ export default async function ManagerResults() {
 								<span
 									className={styles.qNum}
 									style={{
-										color: avgScore >= 70 ? 'var(--color-accent)' : 'var(--color-danger)'
+										color: avgScore >= 80 ? 'var(--color-accent)' : 'var(--color-danger)'
 									}}
 								>
 									{avgScore > 0 ? `${avgScore}%` : '—'}
@@ -363,7 +363,6 @@ export default async function ManagerResults() {
 										<div className={styles.quizInfo}>
 											<div className={styles.quizTopic}>{(r.quizzes as any)?.topics?.title}</div>
 
-											<div className={styles.quizName}>{(r.quizzes as any)?.title}</div>
 										</div>
 
 										<div className={styles.quizRight}>

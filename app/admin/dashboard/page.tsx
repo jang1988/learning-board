@@ -97,7 +97,7 @@ export default async function AdminDashboard() {
 					</div>
 					<div>
 						<div className={styles.kpiNum}>{totalUsers ?? 0}</div>
-						<div className={styles.kpiLabel}>Співробітників</div>
+						<div className={styles.kpiLabel}>Робітників</div>
 					</div>
 				</div>
 				<div className={styles.kpiCard}>
@@ -162,7 +162,7 @@ export default async function AdminDashboard() {
 					<div>
 						<div className={styles.kpiNum}>{pendingQuizStats}</div>
 
-						<div className={styles.kpiLabel}>Очікують перевірки</div>
+						<div className={styles.kpiLabel}>Очікують</div>
 					</div>
 				</div>
 			</div>
@@ -262,8 +262,6 @@ export default async function AdminDashboard() {
 
 										<div className={styles.quizPendingMeta}>
 											{(r.quizzes as any)?.topics?.title}
-											{' · '}
-											{(r.quizzes as any)?.title}
 										</div>
 									</div>
 								)
@@ -278,9 +276,7 @@ export default async function AdminDashboard() {
 										<div className={styles.resultName}>{(r.profiles as any)?.full_name}</div>
 
 										<div className={styles.resultMeta}>
-											{(r.quizzes as any)?.topics?.title}
-											{' · '}
-											{(r.quizzes as any)?.title}
+											{(r.quizzes as any)?.topics?.title}					
 										</div>
 									</div>
 

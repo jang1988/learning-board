@@ -47,9 +47,8 @@ export default async function AdminUsers() {
 						<tr>
 							<th>Співробітник</th>
 							<th>Відділ</th>
-							<th>Дата найму</th>
 							<th>Прогрес</th>
-							<th>Тем завершено</th>
+							<th>Завершено</th>
 							<th>Ср. бал</th>
 							<th>Роль</th>
 						</tr>
@@ -74,7 +73,7 @@ export default async function AdminUsers() {
 
 							return (
 								<tr key={emp.id}>
-									<td>
+									<td data-label="Співробітник">
 										<div className={styles.empRow}>
 											<div className={styles.avatar}>
 												{emp.full_name
@@ -86,19 +85,13 @@ export default async function AdminUsers() {
 											</div>
 											<div>
 												<div className={styles.empName}>{emp.full_name}</div>
-												<div className={styles.empEmail}>{emp.email}</div>
 											</div>
 										</div>
 									</td>
-									<td>
+									<td data-label="Відділ">
 										<span className={styles.dept}>{emp.department ?? '—'}</span>
 									</td>
-									<td>
-										<span className={styles.date}>
-											{emp.hired_at ? new Date(emp.hired_at).toLocaleDateString('ru-RU') : '—'}
-										</span>
-									</td>
-									<td style={{ minWidth: 140 }}>
+									<td data-label="Прогрес" style={{ minWidth: 140 }}>
 										<div className={styles.miniBar}>
 											<div
 												className="progress-bar"
@@ -112,17 +105,17 @@ export default async function AdminUsers() {
 											<span className={styles.pct}>{pct}%</span>
 										</div>
 									</td>
-									<td>
+									<td data-label="Завершено">
 										<span
 											className={`badge ${done === total && total > 0 ? 'badge--green' : 'badge--gray'}`}
 										>
 											{done} / {total}
 										</span>
 									</td>
-									<td>
+									<td data-label="Ср. бал">
 										{avgScore !== null ? (
 											<span
-												className={`${styles.score} ${avgScore >= 70 ? styles.good : styles.bad}`}
+												className={`${styles.score} ${avgScore >= 80 ? styles.good : styles.bad}`}
 											>
 												{avgScore}%
 											</span>
@@ -130,7 +123,7 @@ export default async function AdminUsers() {
 											<span className={styles.noData}>—</span>
 										)}
 									</td>
-									<td>
+									<td data-label="Роль">
 										<RoleToggle
 											userId={emp.id}
 											currentRole={emp.role}
@@ -148,10 +141,22 @@ export default async function AdminUsers() {
 
 // Server component can't handle clicks — this is a placeholder
 // In real app, make this a Client Component with server action
-function RoleToggle({ userId, currentRole }: { userId: string; currentRole: string }) {
+function RoleToggle({
+	userId,
+	currentRole
+}: {
+	userId: string
+	currentRole: string
+}) {
+	const isAdmin = currentRole === 'admin'
+
 	return (
-		<span className={`badge ${currentRole === 'admin' ? 'badge--blue' : 'badge--gray'}`}>
-			{currentRole === 'admin' ? 'Адмін' : 'Співробітник'}
+		<span
+			className={`badge ${
+				isAdmin ? 'badge--blue' : 'badge--gray'
+			} ${styles.roleBadge}`}
+		>
+			{isAdmin ? 'Адмін' : 'Співробітник'}
 		</span>
 	)
 }

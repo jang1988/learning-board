@@ -1,11 +1,31 @@
-.page { padding: 28px; max-width: 760px; }
-.header { margin-bottom: 20px; }
+.page {
+	padding: 28px;
+	max-width: 1100px;
+  margin: 0 auto;
+}
+.header {
+	margin-bottom: 20px;
+}
 .attempt {
-  display: inline-flex;
-  padding: 6px 14px;
-  background: var(--color-primary-light);
-  color: var(--color-primary);
-  border-radius: 99px;
-  font-size: 13px;
-  font-weight: 700;
+	display: inline-flex;
+	align-items: center;
+
+	padding: 6px 12px;
+
+	background: linear-gradient(
+		135deg,
+		rgba(0, 159, 123, 0.14),
+		rgba(4, 89, 92, 0.08)
+	);
+
+	border: 1px solid rgba(0, 159, 123, 0.22);
+
+	color: #00b894;
+
+	border-radius: 999px;
+
+	font-size: 12px;
+	font-weight: 700;
+
+	backdrop-filter: blur(12px);
 }

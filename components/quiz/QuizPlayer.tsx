@@ -1,92 +1,84 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import styles from './QuizPlayer.module.css'
 
 interface Props {
 	quiz: any
 	userId: string
 	attemptNum: number
-	onFinish: (result: {
-		passed: boolean
-		percent: number
-		pending: boolean
-	}) => void
+	onFinish: (result: { passed: boolean; percent: number; pending: boolean }) => void
 }
 
-export default function QuizPlayer({
-	quiz,
-	userId,
-	attemptNum,
-	onFinish
-}: Props) {
+export default function QuizPlayer({ quiz, userId, attemptNum, onFinish }: Props) {
 	const questions = quiz.questions ?? []
+	const QUESTION_TIME = 10
 
-	const QUESTION_TIME = 10 // 1 хвилина на питання
-
+	// STATE
+	const [started, setStarted] = useState(false)
 	const [current, setCurrent] = useState(0)
-
-	const [userAnswers, setUserAnswers] = useState<
-		Record<string, string[]>
-	>({})
-
-	const [questionTimeLeft, setQuestionTimeLeft] =
-		useState(QUESTION_TIME)
-
+	const [userAnswers, setUserAnswers] = useState<Record<string, string[]>>({})
+	const [questionTimeLeft, setQuestionTimeLeft] = useState(QUESTION_TIME)
 	const [submitting, setSubmitting] = useState(false)
 
-	const [visitedQuestions, setVisitedQuestions] = useState<number[]>([0])
+	const finishedRef = useRef(false)
+	const startTimeRef = useRef<number | null>(null)
 
 	const question = questions[current]
 
+	// Вспомогательная функция выхода из fullscreen
+	const exitFullscreen = async () => {
+		if (document.fullscreenElement) {
+			try {
+				await document.exitFullscreen()
+			} catch (e) {
+				console.warn('Exit fullscreen failed:', e)
+			}
+		}
+	}
+
+	const startQuiz = async () => {
+		setStarted(true)
+		startTimeRef.current = Date.now()
+		try {
+			await document.documentElement.requestFullscreen()
+		} catch (e) {
+			console.warn('Fullscreen blocked:', e)
+		}
+	}
+
 	const spentTime = useMemo(() => {
-		return (
-			current * QUESTION_TIME +
-			(QUESTION_TIME - questionTimeLeft)
-		)
+		if (!startTimeRef.current) return 0
+		return Math.floor((Date.now() - startTimeRef.current) / 1000)
 	}, [current, questionTimeLeft])
 
-	// Формат часу
 	const formatTime = (sec: number) =>
-		`${Math.floor(sec / 60)}:${(sec % 60)
-			.toString()
-			.padStart(2, '0')}`
+		`${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, '0')}`
 
-	// Перехід до наступного питання
 	const goNext = useCallback(() => {
 		if (current >= questions.length - 1) return
-
-		const nextIndex = current + 1
-
-		setCurrent(nextIndex)
+		setCurrent(prev => prev + 1)
 		setQuestionTimeLeft(QUESTION_TIME)
-
-		setVisitedQuestions(prev =>
-			prev.includes(nextIndex)
-				? prev
-				: [...prev, nextIndex]
-		)
 	}, [current, questions.length])
 
-	// Submit тесту
-	const handleSubmit = useCallback(async () => {
-		if (submitting) return
+	const goPrev = useCallback(() => {
+		if (current <= 0) return
+		setCurrent(prev => prev - 1)
+		setQuestionTimeLeft(QUESTION_TIME)
+	}, [current])
 
+	const handleSubmit = useCallback(async () => {
+		if (submitting || finishedRef.current) return
+		finishedRef.current = true
 		setSubmitting(true)
 
 		const supabase = createClient()
 
-		const autoQuestions = questions.filter(
-			(q: any) => q.type !== 'text'
-		)
-
-		const textQuestions = questions.filter(
-			(q: any) => q.type === 'text'
-		)
+		const autoQuestions = questions.filter((q: any) => q.type !== 'text')
+		const textQuestions = questions.filter((q: any) => q.type === 'text')
 
 		let allAnswers: any[] = []
-
 		if (autoQuestions.length > 0) {
 			const { data } = await supabase
 				.from('answers')
@@ -95,120 +87,63 @@ export default function QuizPlayer({
 					'question_id',
 					autoQuestions.map((q: any) => q.id)
 				)
-
 			allAnswers = data ?? []
 		}
 
 		let autoEarned = 0
-		let autoTotal = 0
-
 		for (const q of autoQuestions) {
-			autoTotal += q.points
-
 			const correctIds = allAnswers
-				.filter(
-					(a: any) =>
-						a.question_id === q.id &&
-						a.is_correct
-				)
+				.filter((a: any) => a.question_id === q.id && a.is_correct)
 				.map((a: any) => a.id)
 				.sort()
-
-			const chosen = (
-				userAnswers[q.id] ?? []
-			).sort()
-
-			if (
-				correctIds.join(',') ===
-				chosen.join(',')
-			) {
+			const chosen = (userAnswers[q.id] ?? []).sort()
+			if (correctIds.join(',') === chosen.join(',')) {
 				autoEarned += q.points
 			}
 		}
 
-		const totalPoints = questions.reduce(
-			(sum: number, q: any) =>
-				sum + (q.points ?? 1),
-			0
-		)
+		const totalPoints = questions.reduce((sum: number, q: any) => sum + (q.points ?? 1), 0)
+		const percent = totalPoints > 0 ? Math.round((autoEarned / totalPoints) * 100) : 0
 
-		const percent =
-			totalPoints > 0
-				? Math.round(
-						(autoEarned / totalPoints) * 100
-				  )
-				: 0
-
-		const filledText = textQuestions.filter(
-			(q: any) =>
-				userAnswers[q.id]?.[0]
-					?.trim()
-					.length > 0
-		)
-
+		const filledText = textQuestions.filter((q: any) => userAnswers[q.id]?.[0]?.trim().length > 0)
 		const pending = filledText.length > 0
+		const passed = !pending && percent >= quiz.passing_score
 
-		const passed =
-			!pending &&
-			percent >= quiz.passing_score
+		const { data: quizResult } = await supabase
+			.from('quiz_results')
+			.insert({
+				user_id: userId,
+				quiz_id: quiz.id,
+				score: autoEarned,
+				max_score: totalPoints,
+				percent,
+				passed,
+				attempt_num: attemptNum,
+				status: pending ? 'pending' : 'reviewed',
+				time_spent_sec: spentTime
+			})
+			.select('id')
+			.single()
 
-		const { data: quizResult } =
-			await supabase
-				.from('quiz_results')
-				.insert({
-					user_id: userId,
-					quiz_id: quiz.id,
-					score: autoEarned,
-					max_score: totalPoints,
-					percent,
-					passed,
-					attempt_num: attemptNum,
-					status: pending
-						? 'pending'
-						: 'reviewed',
-					time_spent_sec: spentTime
-				})
-				.select('id')
-				.single()
-
-		// Текстові відповіді
 		if (quizResult && filledText.length > 0) {
-			await supabase
-				.from('text_answers')
-				.insert(
-					filledText.map((q: any) => ({
-						quiz_result_id:
-							quizResult.id,
-						question_id: q.id,
-						user_id: userId,
-						answer_text:
-							userAnswers[q.id][0].trim(),
-						is_correct: null
-					}))
-				)
+			await supabase.from('text_answers').insert(
+				filledText.map((q: any) => ({
+					quiz_result_id: quizResult.id,
+					question_id: q.id,
+					user_id: userId,
+					answer_text: userAnswers[q.id][0].trim(),
+					is_correct: null
+				}))
+			)
 		}
 
-		onFinish({
-			passed,
-			percent,
-			pending
-		})
-	}, [
-		submitting,
-		questions,
-		userAnswers,
-		quiz,
-		userId,
-		attemptNum,
-		spentTime,
-		onFinish
-	])
+		// Выход из fullscreen перед вызовом onFinish
+		await exitFullscreen()
+		onFinish({ passed, percent, pending })
+	}, [submitting, questions, userAnswers, quiz, userId, attemptNum, spentTime, onFinish])
 
-	// Таймер питання
 	useEffect(() => {
-		if (submitting) return
-
-		// Час вийшов
+		if (!started || submitting) return
 		if (questionTimeLeft <= 0) {
 			if (current === questions.length - 1) {
 				handleSubmit()
@@ -217,199 +152,209 @@ export default function QuizPlayer({
 			}
 			return
 		}
-
 		const timer = setTimeout(() => {
 			setQuestionTimeLeft(prev => prev - 1)
 		}, 1000)
-
 		return () => clearTimeout(timer)
-	}, [
-		questionTimeLeft,
-		current,
-		questions.length,
-		handleSubmit,
-		goNext,
-		submitting
-	])
+	}, [questionTimeLeft, current, questions.length, started, submitting, handleSubmit, goNext])
 
-	// Вибір відповіді
+	const handleForceFinish = useCallback(async () => {
+		if (submitting || finishedRef.current) return
+		finishedRef.current = true
+		setSubmitting(true)
+		const supabase = createClient()
+		await supabase.from('quiz_results').insert({
+			user_id: userId,
+			quiz_id: quiz.id,
+			score: 0,
+			max_score: questions.reduce((sum: number, q: any) => sum + (q.points ?? 1), 0),
+			percent: 0,
+			passed: false,
+			attempt_num: attemptNum,
+			status: 'reviewed',
+			time_spent_sec: spentTime
+		})
+		// Выход из fullscreen перед вызовом onFinish
+		await exitFullscreen()
+		onFinish({ passed: false, percent: 0, pending: false })
+	}, [submitting, userId, quiz, questions, attemptNum, spentTime, onFinish])
+
+	useEffect(() => {
+		if (!started) return
+		const handler = () => {
+			if (document.hidden) handleForceFinish()
+		}
+		document.addEventListener('visibilitychange', handler)
+		return () => document.removeEventListener('visibilitychange', handler)
+	}, [started, handleForceFinish])
+
+	useEffect(() => {
+		if (!started) return
+		const handler = () => {
+			if (!document.fullscreenElement) handleForceFinish()
+		}
+		document.addEventListener('fullscreenchange', handler)
+		return () => document.removeEventListener('fullscreenchange', handler)
+	}, [started, handleForceFinish])
+
+	useEffect(() => {
+		if (!started) return
+		history.pushState(null, '', location.href)
+		const handler = () => history.pushState(null, '', location.href)
+		window.addEventListener('popstate', handler)
+		return () => window.removeEventListener('popstate', handler)
+	}, [started])
+
+	useEffect(() => {
+		const handler = (e: KeyboardEvent) => {
+			if (
+				e.key === 'F12' ||
+				(e.ctrlKey && e.shiftKey && e.key === 'I') ||
+				(e.ctrlKey && e.key === 'u')
+			) {
+				e.preventDefault()
+			}
+		}
+		window.addEventListener('keydown', handler)
+		return () => window.removeEventListener('keydown', handler)
+	}, [])
+
 	const toggleAnswer = (answerId: string) => {
 		const qid = question.id
-
 		setUserAnswers(prev => {
 			const currentAnswers = prev[qid] ?? []
-
-			// SINGLE
 			if (question.type === 'single') {
-				return {
-					...prev,
-					[qid]: [answerId]
-				}
+				return { ...prev, [qid]: [answerId] }
 			}
-
-			// MULTIPLE
-			const next = currentAnswers.includes(
-				answerId
-			)
-				? currentAnswers.filter(
-						(id: string) =>
-							id !== answerId
-				  )
-				: [...currentAnswers, answerId]
-
 			return {
 				...prev,
-				[qid]: next
+				[qid]: currentAnswers.includes(answerId)
+					? currentAnswers.filter(id => id !== answerId)
+					: [...currentAnswers, answerId]
 			}
 		})
 	}
 
-	const chosen =
-		userAnswers[question?.id] ?? []
+	const chosen = userAnswers[question?.id] ?? []
+	const isAnswered = (idx: number) => {
+		const q = questions[idx]
+		return q && userAnswers[q.id] && userAnswers[q.id].length > 0
+	}
+
+	if (!started) {
+		return (
+			<div className={styles.startScreen}>
+				<div className={styles.startWarningIcon}>⚠️</div>
+
+				<div className={styles.startBadge}>Важливе повідомлення</div>
+
+				<h2>Перед початком</h2>
+
+				<p className={styles.startDesc}>
+					Цей тест працює у режимі <strong>реального іспиту</strong>. Будь ласка, уважно ознайомтесь
+					з правилами перед початком.
+				</p>
+
+				<ul>
+					<li>Таймер запускається одразу після старту</li>
+					<li>Оновлення сторінки заборонено</li>
+					<li>
+						<strong>Не выходьте з повноекранного режиму</strong>
+					</li>
+					<li>Деякі питання можуть мати декілька правильних відповідей</li>
+				</ul>
+
+				<button
+					className={styles.startBtn}
+					onClick={startQuiz}
+				>
+					Розпочати тест
+				</button>
+			</div>
+		)
+	}
 
 	return (
 		<div className={styles.wrap}>
-			{/* HEADER */}
 			<div className={styles.header}>
-				<div className={styles.headerLeft}>
-					<div className={styles.qCounter}>
-						Питання {current + 1} з{' '}
-						{questions.length}
-					</div>
-
-					<div className={styles.quizTitle}>
-						{quiz.title}
-					</div>
+				<div className={styles.qCounter}>
+					Питання {current + 1} з {questions.length}
 				</div>
-
-				<div className={styles.timerGroup}>
-					{/* Таймер питання */}
-					<div
-						className={`${styles.timer} ${
-							questionTimeLeft <= 15
-								? styles.timerWarn
-								: ''
-						}`}
-					>
-						⏱ {formatTime(questionTimeLeft)}
-					</div>
+				<div className={`${styles.timer} ${questionTimeLeft <= 3 ? styles.timerWarn : ''}`}>
+					⏱ {formatTime(questionTimeLeft)}
 				</div>
 			</div>
 
-			{/* Progress */}
-			<div
-				className="progress-bar"
-				style={{ marginBottom: 24 }}
-			>
-				<div
-					className="progress-bar__fill"
-					style={{
-						width: `${
-							((current + 1) /
-								questions.length) *
-							100
-						}%`
-					}}
-				/>
-			</div>
-
-			{/* QUESTION */}
 			<div className={styles.question}>
-				<p className={styles.questionText}>
-					{question?.text}
-				</p>
-
-				{question?.type === 'multiple' && (
-					<p className={styles.hint}>
-						Виберіть усі правильні
-						варіанти
-					</p>
-				)}
-
-				{question?.type === 'text' && (
-					<p className={styles.hint}>
-						✏️ Відповідь перевіряється
-						адміністратором
-					</p>
-				)}
+				<div className={styles.questionText}>{question?.text}</div>
+				{question?.hint && <div className={styles.hint}>{question.hint}</div>}
 			</div>
 
-			{/* ANSWERS */}
 			{question?.type !== 'text' ? (
 				<div className={styles.answers}>
-					{question?.answers?.map(
-						(answer: any) => {
-							const selected =
-								chosen.includes(
-									answer.id
-								)
-
-							return (
-								<button
-									key={answer.id}
-									type="button"
-									className={`${styles.answerBtn} ${
-										selected
-											? styles.selected
-											: ''
-									}`}
-									onClick={() =>
-										toggleAnswer(
-											answer.id
-										)
-									}
-								>
-									<span
-										className={`${
-											styles.answerCheck
-										} ${
-											selected
-												? styles.checkSelected
-												: ''
-										}`}
-									>
-										{question.type ===
-										'single'
-											? selected
-												? '●'
-												: '○'
-											: selected
-												? '✓'
-												: '□'}
-									</span>
-
-									{answer.text}
-								</button>
-							)
-						}
-					)}
+					{question?.answers?.map((a: any) => {
+						const selected = chosen.includes(a.id)
+						return (
+							<button
+								key={a.id}
+								onClick={() => toggleAnswer(a.id)}
+								className={`${styles.answerBtn} ${selected ? styles.selected : ''}`}
+							>
+								<span className={`${styles.answerCheck} ${selected ? styles.checkSelected : ''}`}>
+									{selected ? '✓' : '○'}
+								</span>
+								{a.text}
+							</button>
+						)
+					})}
 				</div>
 			) : (
 				<textarea
 					className={styles.textAnswer}
-					placeholder="Введіть вашу відповідь..."
 					value={chosen[0] ?? ''}
 					onChange={e =>
 						setUserAnswers(prev => ({
 							...prev,
-							[question.id]: [
-								e.target.value
-							]
+							[question.id]: [e.target.value]
 						}))
 					}
-					rows={5}
+					placeholder="Введіть відповідь..."
+					rows={4}
 				/>
 			)}
 
-			{/* NAV */}
 			<div className={styles.nav}>
+				<button
+					className={styles.prevBtn}
+					onClick={goPrev}
+					disabled={current === 0 || submitting}
+				>
+					← Назад
+				</button>
 
-				{/* NEXT / SUBMIT */}
-				{current <
-				questions.length - 1 ? (
+				<div className={styles.dots}>
+					{questions.map((_: any, idx: number) => (
+						<button
+							key={idx}
+							className={`${styles.dot} ${idx === current ? styles.dotCurrent : ''} ${
+								isAnswered(idx) ? styles.dotAnswered : ''
+							}`}
+							onClick={() => {
+								if (!submitting) {
+									setCurrent(idx)
+									setQuestionTimeLeft(QUESTION_TIME)
+								}
+							}}
+							disabled={submitting}
+						/>
+					))}
+				</div>
+
+				{current < questions.length - 1 ? (
 					<button
 						className={styles.nextBtn}
 						onClick={goNext}
+						disabled={submitting}
 					>
 						Далі →
 					</button>
@@ -419,9 +364,7 @@ export default function QuizPlayer({
 						onClick={handleSubmit}
 						disabled={submitting}
 					>
-						{submitting
-							? 'Надсилання...'
-							: 'Завершити тест'}
+						Завершити
 					</button>
 				)}
 			</div>

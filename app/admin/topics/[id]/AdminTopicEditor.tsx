@@ -81,7 +81,7 @@ export default function AdminTopicEditor({
 			.insert({
 				topic_id: topic.id,
 				title: `Тест: ${topic.title}`,
-				passing_score: 70,
+				passing_score: 80,
 				max_attempts: 3
 			})
 			.select()
@@ -143,7 +143,7 @@ export default function AdminTopicEditor({
 			questions: prev.questions.filter((q: any) => q.id !== qId)
 		}))
 	}
-
+	
 	return (
 		<div className={styles.page}>
 			<div className={styles.topBar}>

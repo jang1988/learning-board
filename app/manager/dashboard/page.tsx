@@ -162,6 +162,7 @@ export default async function ManagerDashboard() {
 													? 'badge--blue'
 													: 'badge--gray'
 										}`}
+										style={{ whiteSpace: 'nowrap' }}
 									>
 										{topic.status === 'completed'
 											? '✓ Готово'
@@ -220,18 +221,36 @@ export default async function ManagerDashboard() {
 									>
 										<div className={styles.resultInfo}>
 											<div className={styles.resultTopic}>{(r.quizzes as any)?.topics?.title}</div>
-											<div className={styles.resultQuiz}>{(r.quizzes as any)?.title}</div>
-											{isPending && <div className={styles.resultPending}>⏳ Очікує перевірки</div>}
+
+											{isPending ? (
+												<div className={styles.pendingLine}>
+													<span className={styles.pendingDot}></span>
+													<span className={styles.resultPending}>Очікує перевірки</span>
+												</div>
+											) : (
+												<div className={styles.resultMeta}>
+													<span className={`badge ${r.passed ? 'badge--green' : 'badge--red'}`}>
+														{r.passed ? 'Складено' : 'Не складено'}
+													</span>
+												</div>
+											)}
 										</div>
-										{isPending ? (
-											<div className={styles.resultScorePending}>⏳</div>
-										) : (
-											<div
-												className={`${styles.resultScore} ${r.passed ? styles.passed : styles.failed}`}
-											>
-												{r.percent}%
-											</div>
-										)}
+
+										<div className={styles.resultRight}>
+											{isPending ? (
+												<div className={styles.resultScorePending}>
+													<div className={styles.pendingSpinner}></div>
+												</div>
+											) : (
+												<div
+													className={`${styles.resultScore} ${
+														r.passed ? styles.passed : styles.failed
+													}`}
+												>
+													{r.percent}%
+												</div>
+											)}
+										</div>
 									</div>
 								)
 							})}

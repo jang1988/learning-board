@@ -169,7 +169,7 @@ export default async function AdminReports() {
 									<div className={styles.rDept}>{(r.profiles as any)?.department ?? ''}</div>
 								</div>
 								<div>
-									<div className={styles.rQuiz}>{(r.quizzes as any)?.title}</div>
+									{/* <div className={styles.rQuiz}>{(r.quizzes as any)?.title}</div> */}
 									<div className={styles.rTopic}>{(r.quizzes as any)?.topics?.title}</div>
 								</div>
 								<div className={styles.rScore}>

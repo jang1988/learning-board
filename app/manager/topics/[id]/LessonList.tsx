@@ -12,49 +12,74 @@ interface Lesson {
   video_url: string
   order_index: number
   materials?: { id: string; title: string; url: string; type: string }[]
-  lesson_progress?: { status: string; completed_at?: string }[]
 }
 
 interface Props {
   lessons: Lesson[]
   userId: string
   topicId: string
-  lessonsTotal: number
+  initialCompletedIds: string[]
+  onProgressUpdate: (lessonId: string, isCompleted: boolean) => void
 }
 
-export default function LessonList({ lessons, userId, topicId, lessonsTotal }: Props) {
+export default function LessonList({
+  lessons,
+  userId,
+  topicId,
+  initialCompletedIds,
+  onProgressUpdate,
+}: Props) {
+  const supabase = createClient()
   const [expanded, setExpanded] = useState<string | null>(null)
   const [completedIds, setCompletedIds] = useState<Set<string>>(
-    new Set(lessons.filter(l => l.lesson_progress?.[0]?.status === 'completed').map(l => l.id))
+    () => new Set(initialCompletedIds)
   )
 
   const handleComplete = async (lessonId: string) => {
-    const supabase = createClient()
+    if (completedIds.has(lessonId)) return
 
-    await supabase.from('lesson_progress').upsert({
-      user_id: userId,
-      lesson_id: lessonId,
-      status: 'completed',
-      completed_at: new Date().toISOString(),
+    // Оптимистичное обновление
+    setCompletedIds(prev => {
+      const next = new Set(prev)
+      next.add(lessonId)
+      return next
     })
+    onProgressUpdate(lessonId, true)
 
-    const newCompleted = new Set(completedIds)
-    newCompleted.add(lessonId)
-    setCompletedIds(newCompleted)
+    const { error: lpError } = await supabase
+      .from('lesson_progress')
+      .upsert({
+        user_id: userId,
+        lesson_id: lessonId,
+        status: 'completed',
+        completed_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,lesson_id' })
 
-    // Обновить прогресс темы
-    const lessonsDone = newCompleted.size
-    const status = lessonsDone === lessonsTotal ? 'completed' : 'in_progress'
+    if (lpError) {
+      // Откат
+      setCompletedIds(prev => {
+        const next = new Set(prev)
+        next.delete(lessonId)
+        return next
+      })
+      onProgressUpdate(lessonId, false)
+      return
+    }
+
+    // Обновляем topic_progress
+    const newDone = completedIds.size + 1
+    const newTotal = lessons.length
+    const newStatus = newDone === newTotal ? 'completed' : 'in_progress'
 
     await supabase.from('topic_progress').upsert({
       user_id: userId,
       topic_id: topicId,
-      status,
-      lessons_done: lessonsDone,
-      lessons_total: lessonsTotal,
+      status: newStatus,
+      lessons_done: newDone,
+      lessons_total: newTotal,
       started_at: new Date().toISOString(),
-      ...(status === 'completed' ? { completed_at: new Date().toISOString() } : {}),
-    })
+      ...(newStatus === 'completed' ? { completed_at: new Date().toISOString() } : {}),
+    }, { onConflict: 'user_id,topic_id' })
   }
 
   return (
@@ -64,7 +89,10 @@ export default function LessonList({ lessons, userId, topicId, lessonsTotal }: P
         const isOpen = expanded === lesson.id
 
         return (
-          <div key={lesson.id} className={`${styles.lessonCard} ${isDone ? styles.lessonDone : ''}`}>
+          <div
+            key={lesson.id}
+            className={`${styles.lessonCard} ${isDone ? styles.lessonDone : ''}`}
+          >
             <button
               className={styles.lessonHeader}
               onClick={() => setExpanded(isOpen ? null : lesson.id)}

@@ -1,245 +1,685 @@
-.page { padding: 28px; max-width: 1060px; }
-
-.header { margin-bottom: 28px; }
-.title { font-size: 22px; font-weight: 800; }
-.sub { font-size: 14px; color: var(--color-text-2); margin-top: 4px; }
-
-/* Overall card */
-.overallCard {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  background: linear-gradient(135deg, #1E40AF 0%, #2563EB 50%, #3B82F6 100%);
-  border-radius: var(--radius-lg);
-  padding: 28px 32px;
-  margin-bottom: 24px;
-  color: #fff;
+/* ============================================
+   Base / Page
+============================================ */
+.page {
+    padding: 28px;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+    background:
+        radial-gradient(900px 400px at 10% 0%, rgba(59, 130, 246, 0.08), transparent 60%),
+        radial-gradient(600px 300px at 90% 10%, rgba(16, 185, 129, 0.06), transparent 60%);
 }
 
-.overallLeft { flex-shrink: 0; }
+.header {
+    margin-bottom: 28px;
+}
+
+.title {
+    font-size: clamp(22px, 2.6vw, 28px);
+    font-weight: 850;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--color-text);
+}
+
+.sub {
+    font-size: 14px;
+    color: var(--color-text-2);
+    margin-top: 6px;
+    line-height: 1.6;
+}
+
+/* ============================================
+   Overall hero card (gradient + modern)
+============================================ */
+.overallCard {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    background: linear-gradient(135deg, #1e3a8a, #2563eb, #3b82f6);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    margin-bottom: 24px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.overallCard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.18), transparent 60%);
+    pointer-events: none;
+}
+
+.overallLeft {
+    flex-shrink: 0;
+}
 
 .overallCircle {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  background: conic-gradient(
-    rgba(255,255,255,.9) calc(var(--pct, 0) * 1%),
-    rgba(255,255,255,.2) 0
-  );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+    --size: 92px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: conic-gradient(rgba(255, 255, 255, 0.95) calc(var(--pct, 0) * 1%), rgba(255, 255, 255, 0.15) 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .overallInner {
-  width: 74px;
-  height: 74px;
-  border-radius: 50%;
-  background: #1E40AF;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    width: calc(var(--size) - 18px);
+    height: calc(var(--size) - 18px);
+    border-radius: 50%;
+    background: rgba(30, 58, 138, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
-.overallNum { font-size: 20px; font-weight: 800; color: #fff; line-height: 1; }
-.overallLabel { font-size: 10px; color: rgba(255,255,255,.7); font-weight: 500; }
+.overallNum {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1;
+}
 
-.overallRight { flex: 1; }
-.overallTitle { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-.overallSub { font-size: 13px; color: rgba(255,255,255,.8); margin-bottom: 14px; }
-.overallBar { margin-bottom: 18px; }
-.overallBar .progress-bar { background: rgba(255,255,255,.2); height: 8px; }
-.overallBar .progress-bar__fill { background: rgba(255,255,255,.9); }
+.overallLabel {
+    font-size: 10px;
+    font-weight: 500;
+    margin-top: 3px;
+    opacity: 0.85;
+}
 
-.overallStats { display: flex; gap: 24px; }
-.oStat { display: flex; flex-direction: column; }
-.oNum { font-size: 22px; font-weight: 800; line-height: 1; }
-.oLabel { font-size: 11px; color: rgba(255,255,255,.7); margin-top: 2px; font-weight: 500; }
+.overallRight {
+    flex: 1;
+    min-width: 0;
+}
 
-/* Grid */
+.overallTitle {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.overallSub {
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0.85;
+    margin-top: 4px;
+    margin-bottom: 14px;
+}
+
+.overallBar {
+    margin-bottom: 18px;
+}
+
+.overallBar .progress-bar {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.overallBar .progress-bar__fill {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 999px;
+}
+
+.overallStats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.oStat {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.oNum {
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.oLabel {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.75;
+    margin-top: 4px;
+}
+
+/* ============================================
+   Grid & cards system (glassmorphism + lift)
+============================================ */
 .grid {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 20px;
-  align-items: start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 20px;
+    align-items: start;
 }
 
-.rightCol { display: flex; flex-direction: column; gap: 20px; }
+.rightCol {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-/* Section */
+.section,
+.topicRow,
+.quizRow,
+.historyRow,
+.lessonChip,
+.quizPending {
+    background: var(--color-surface);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: var(--radius);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
 .section {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
+    padding: 20px;
 }
-.sectionTitle { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
 
-/* Topics list */
-.topicList { display: flex; flex-direction: column; gap: 2px; }
+.sectionTitle {
+    font-size: 14px;
+    font-weight: 750;
+    letter-spacing: 0.01em;
+    margin-bottom: 14px;
+}
+
+/* hover lift */
+.section:hover,
+.topicRow:hover,
+.quizRow:hover,
+.historyRow:hover,
+.lessonChip:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.08), 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.section:hover {
+	background: radial-gradient(
+		400px 120px at 20% 0%,
+		rgba(59,130,246,0.12),
+		transparent 60%
+	);
+	border-color: rgba(59, 130, 246, 0.25);
+}
+
+/* ============================================
+   Topics list
+============================================ */
+.topicList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 
 .topicRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border);
-  gap: 12px;
-  transition: opacity .15s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
 }
-.topicRow:last-child { border-bottom: none; }
-.topicRow:hover { opacity: .8; }
 
-.topicLeft { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.topicLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
 
 .topicStatus {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
-.statusDone { background: var(--color-accent-light); color: #059669; }
-.statusProgress { background: var(--color-primary-light); color: var(--color-primary); }
-.statusNone { background: var(--color-surface-2); color: var(--color-text-3); }
 
-.topicName { font-size: 14px; font-weight: 600; }
-.topicMeta { font-size: 12px; color: var(--color-text-3); margin-top: 2px; display: flex; align-items: center; gap: 6px; }
-.reqBadge { color: var(--color-primary); font-weight: 600; font-size: 11px; }
+.statusDone {
+    background: var(--color-accent-light);
+    color: var(--color-accent);
+}
 
-.topicRight { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.topicBarWrap { display: flex; align-items: center; gap: 6px; }
-.topicPct { font-size: 12px; font-weight: 600; color: var(--color-text-2); min-width: 30px; text-align: right; }
-.completedAt { font-size: 11px; color: var(--color-text-3); font-family: var(--font-mono); }
+.statusProgress {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+}
 
-/* Quiz summary */
+.statusNone {
+    background: var(--color-surface-2);
+    color: var(--color-text-3);
+}
+
+.topicName {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.topicMeta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--color-text-3);
+}
+
+.reqBadge {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.topicRight {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.topicBarWrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.topicPct {
+    min-width: 34px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+    color: var(--color-text-2);
+}
+
+.completedAt {
+    font-size: 11px;
+    color: var(--color-text-3);
+    font-family: var(--font-mono);
+}
+
+/* ============================================
+   Quiz summary (small stats)
+============================================ */
 .quizSummary {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 14px;
-  background: var(--color-bg);
-  border-radius: var(--radius);
-  margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    background: var(--color-bg);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 16px;
+    gap: 8px;
 }
-.qStat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.qNum { font-size: 24px; font-weight: 800; }
-.qLabel { font-size: 11px; color: var(--color-text-3); font-weight: 500; }
-.qDivider { width: 1px; height: 32px; background: var(--color-border); }
 
-.quizList { display: flex; flex-direction: column; gap: 2px; }
+.qStat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.qNum {
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.qLabel {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-3);
+    margin-top: 4px;
+}
+
+.qDivider {
+    width: 1px;
+    height: 34px;
+    background: var(--color-border);
+    align-self: center;
+}
+
+/* ============================================
+   Quizzes list
+============================================ */
+.quizList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 
 .quizRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--color-border);
-  gap: 10px;
-}
-.quizRow:last-child { border-bottom: none; }
-
-.quizTopic { font-size: 11px; color: var(--color-text-3); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-.quizName { font-size: 13px; font-weight: 600; margin-top: 2px; }
-.quizRight { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.quizScore { font-size: 18px; font-weight: 800; }
-.scorePassed { color: var(--color-accent); }
-.scoreFailed { color: var(--color-danger); }
-
-/* History */
-.historyList { display: flex; flex-direction: column; gap: 2px; }
-.historyRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--color-border);
-  gap: 10px;
-}
-.historyRow:last-child { border-bottom: none; }
-.historyLeft { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-.historyDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dotGreen { background: var(--color-accent); }
-.dotRed { background: var(--color-danger); }
-.historyQuiz { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.historyDate { font-size: 11px; color: var(--color-text-3); margin-top: 1px; }
-.historyScore { font-size: 14px; font-weight: 800; flex-shrink: 0; }
-
-/* Lesson chips */
-.lessonGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-.lessonChip {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 12px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-}
-.lessonChipIcon { color: var(--color-accent); font-size: 13px; flex-shrink: 0; margin-top: 1px; }
-.lessonChipTitle { font-size: 12px; font-weight: 600; line-height: 1.3; }
-.lessonChipTopic { font-size: 11px; color: var(--color-text-3); margin-top: 2px; }
-
-.empty { font-size: 13px; color: var(--color-text-3); padding: 16px 0; text-align: center; }
-
-@media (max-width: 860px) {
-  .grid { grid-template-columns: 1fr; }
-  .overallCard { flex-direction: column; text-align: center; }
-  .overallStats { justify-content: center; }
-  .lessonGrid { grid-template-columns: repeat(2, 1fr); }
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
 }
 
-@media (max-width: 500px) {
-  .lessonGrid { grid-template-columns: 1fr; }
-  .overallStats { gap: 16px; }
+.quizInfo {
+    flex: 1;
+    min-width: 0;
 }
 
+.quizTopic {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-text-3);
+}
+
+.quizName {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+    margin-top: 3px;
+    word-break: break-word;
+}
+
+.quizRight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.quizScore {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.scorePassed {
+    color: var(--color-accent);
+}
+
+.scoreFailed {
+    color: var(--color-danger);
+}
+
+/* pending quiz state */
 .quizPending {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 18px;
-  background: var(--color-warn-light);
-  border: 1.5px solid #FCD34D;
-  border-radius: var(--radius);
-  gap: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    background: var(--color-warn-light);
+    border-color: #fcd34d;
+    gap: 8px;
 }
 
 .quizPendingIcon {
-  font-size: 28px;
-  line-height: 1;
+    font-size: 28px;
 }
 
 .quizPendingText {
-  font-size: 14px;
-  font-weight: 700;
-  color: #D97706;
+    font-size: 14px;
+    font-weight: 700;
+    color: #d97706;
 }
 
 .quizPendingSub {
-  font-size: 12px;
-  color: #92400E;
-  line-height: 1.5;
-  max-width: 260px;
+    max-width: 260px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #92400e;
+}
+
+/* ============================================
+   History timeline
+============================================ */
+.historyList {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.historyRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+}
+
+.historyLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 0;
+}
+
+.historyDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dotGreen {
+    background: var(--color-accent);
+}
+
+.dotRed {
+    background: var(--color-danger);
 }
 
 .dotPending {
-  background: #F59E0B;
+    background: #f59e0b;
+}
+
+.historyQuiz {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+    word-break: break-word;
+}
+
+.historyDate {
+    font-size: 11px;
+    color: var(--color-text-3);
+    margin-top: 2px;
+}
+
+.historyScore {
+    font-size: 14px;
+    font-weight: 800;
+    flex-shrink: 0;
 }
 
 .historyPending {
-  font-size: 13px;
-  font-weight: 700;
-  color: #D97706;
+    font-size: 13px;
+    font-weight: 700;
+    color: #d97706;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   Lessons grid
+============================================ */
+.lessonGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.lessonChip {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px;
+}
+
+.lessonChipIcon {
+    font-size: 13px;
+    color: var(--color-accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.lessonChipTitle {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.lessonChipTopic {
+    font-size: 11px;
+    color: var(--color-text-3);
+    margin-top: 3px;
+    word-break: break-word;
+}
+
+/* ============================================
+   Empty state
+============================================ */
+.empty {
+    padding: 70px 20px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px dashed rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--color-text-3);
+}
+
+/* ============================================
+   Responsive: Tablet
+============================================ */
+@media (max-width: 980px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .overallCard {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .overallStats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    .lessonGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ============================================
+   Responsive: Mobile
+============================================ */
+@media (max-width: 640px) {
+    .page {
+        padding: 18px 14px;
+    }
+
+    .section {
+        padding: 16px;
+    }
+
+    .overallCard {
+        padding: 22px 18px;
+        gap: 22px;
+        text-align: center;
+        align-items: center;
+    }
+
+    .overallRight {
+        width: 100%;
+    }
+
+    .overallStats {
+        gap: 14px;
+    }
+
+    .overallCircle {
+        --size: 88px;
+    }
+
+    .topicRow,
+    .quizRow,
+    .historyRow {
+        align-items: flex-start;
+    }
+
+    .topicRight,
+    .quizRight {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+    }
+
+    .topicBarWrap {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+    }
+
+    .quizSummary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: 16px;
+    }
+
+    .qDivider {
+        display: none;
+    }
+
+    .lessonGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .quizPending {
+        padding: 18px 14px;
+    }
+}
+
+/* ============================================
+   Responsive: Small mobile
+============================================ */
+@media (max-width: 420px) {
+    .title {
+        font-size: 20px;
+    }
+
+    .sectionTitle {
+        font-size: 14px;
+    }
+
+    .quizScore {
+        font-size: 16px;
+    }
+
+    .oNum,
+    .qNum {
+        font-size: 20px;
+    }
+
+    .topicStatus {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
 }

@@ -58,7 +58,7 @@ export default function NewTopicPage() {
 					className={styles.back}
 					onClick={() => router.back()}
 				>
-					← Назад
+					Назад
 				</button>
 				<h1 className={styles.title}>Нова тема</h1>
 			</div>
