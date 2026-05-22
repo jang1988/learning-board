@@ -13,7 +13,7 @@ interface Props {
 
 export default function QuizPlayer({ quiz, userId, attemptNum, onFinish }: Props) {
 	const questions = quiz.questions ?? []
-	const QUESTION_TIME = 10
+	const QUESTION_TIME = 30
 
 	// STATE
 	const [started, setStarted] = useState(false)
@@ -324,32 +324,6 @@ export default function QuizPlayer({ quiz, userId, attemptNum, onFinish }: Props
 			)}
 
 			<div className={styles.nav}>
-				<button
-					className={styles.prevBtn}
-					onClick={goPrev}
-					disabled={current === 0 || submitting}
-				>
-					← Назад
-				</button>
-
-				<div className={styles.dots}>
-					{questions.map((_: any, idx: number) => (
-						<button
-							key={idx}
-							className={`${styles.dot} ${idx === current ? styles.dotCurrent : ''} ${
-								isAnswered(idx) ? styles.dotAnswered : ''
-							}`}
-							onClick={() => {
-								if (!submitting) {
-									setCurrent(idx)
-									setQuestionTimeLeft(QUESTION_TIME)
-								}
-							}}
-							disabled={submitting}
-						/>
-					))}
-				</div>
-
 				{current < questions.length - 1 ? (
 					<button
 						className={styles.nextBtn}

@@ -254,7 +254,9 @@ export default async function AdminDashboard() {
 										key={r.id}
 										className={styles.quizPending}
 									>
-										<div className={styles.quizPendingIcon}>⏳</div>
+										<div className={styles.quizPendingIcon}>
+											<div className={styles.pendingSpinner}></div>
+										</div>
 
 										<div className={styles.quizPendingText}>Тест очікує перевірки</div>
 
@@ -275,9 +277,7 @@ export default async function AdminDashboard() {
 									<div className={styles.resultUser}>
 										<div className={styles.resultName}>{(r.profiles as any)?.full_name}</div>
 
-										<div className={styles.resultMeta}>
-											{(r.quizzes as any)?.topics?.title}					
-										</div>
+										<div className={styles.resultMeta}>{(r.quizzes as any)?.topics?.title}</div>
 									</div>
 
 									<div className={styles.resultRight}>

@@ -344,12 +344,14 @@ export default async function ManagerResults() {
 											key={r.id}
 											className={styles.quizPending}
 										>
-											<div className={styles.quizPendingIcon}>⏳</div>
+											<div className={styles.quizPendingIcon}>
+												<div className={styles.pendingSpinner}></div>
+											</div>
 
 											<div className={styles.quizPendingText}>Тест очікує перевірки</div>
 
 											<div className={styles.quizPendingSub}>
-												Менеджер перевірить ваші відповіді найближчим часом
+												Андрій або Геннадій перевірять ваші відповіді найближчим часом
 											</div>
 										</div>
 									)
@@ -362,7 +364,6 @@ export default async function ManagerResults() {
 									>
 										<div className={styles.quizInfo}>
 											<div className={styles.quizTopic}>{(r.quizzes as any)?.topics?.title}</div>
-
 										</div>
 
 										<div className={styles.quizRight}>
@@ -429,7 +430,7 @@ export default async function ManagerResults() {
 											</div>
 
 											{isPending ? (
-												<span className={styles.historyPending}>⏳ Очікує</span>
+												<span className={styles.historyPending}></span>
 											) : (
 												<span
 													className={`${styles.historyScore} ${

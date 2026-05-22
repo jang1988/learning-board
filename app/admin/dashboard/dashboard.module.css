@@ -567,8 +567,6 @@
 
 	border-radius: 22px;
 
-	font-size: 30px;
-
 	background:
 		linear-gradient(
 			135deg,
@@ -583,6 +581,18 @@
 		inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
+.pendingSpinner {
+	width: 26px;
+	height: 26px;
+
+	border: 2px solid rgba(245,158,11,0.22);
+	border-top-color: #f59e0b;
+
+	border-radius: 50%;
+
+	animation: spin 0.8s linear infinite;
+}
+
 .quizPendingText {
 	font-size: 15px;
 	font-weight: 800;
@@ -592,7 +602,7 @@
 
 .quizPendingSub {
 	font-size: 13px;
-	font-weight: 600;
+	font-weight: 700;
 
 	color: #d97706;
 }
@@ -604,6 +614,12 @@
 	line-height: 1.6;
 
 	color: #a16207;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 /* MOBILE */

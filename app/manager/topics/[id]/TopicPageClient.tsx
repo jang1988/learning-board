@@ -136,11 +136,22 @@ export default function TopicPageClient({
 						<div className={styles.quizMeta}>
 							<span>{(quiz.questions as any)?.[0]?.count ?? 0} питань</span>
 							<span>Прохідний бал: {quiz.passing_score}%</span>
-							{quiz.time_limit_sec && <span>⏱ {Math.round(quiz.time_limit_sec / 60)} хв</span>}
 						</div>
 
 						{/* PENDING */}
-						{quizState.isPending && <div className={styles.quizPending}>⏳ Очікує перевірки</div>}
+						{quizState.isPending && (
+							<div className={styles.quizPending}>
+								<div className={styles.quizPendingIcon}>
+									<div className={styles.pendingSpinner}></div>
+								</div>
+
+								<div className={styles.quizPendingText}>Очікує перевірки</div>
+
+								<div className={styles.quizPendingSub}>
+									Результат буде доступний після перевірки адміністратором
+								</div>
+							</div>
+						)}
 
 						{/* RESULT */}
 						{quizState.isReviewed && quizState.quizResult && (

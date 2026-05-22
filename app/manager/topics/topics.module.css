@@ -9,25 +9,29 @@
 ========================= */
 
 .header {
-	margin-bottom: 28px;
+	margin-bottom: 30px;
 }
 
 .title {
-	font-size: 22px;
-	font-weight: 850;
-	letter-spacing: -0.02em;
+	font-size: clamp(28px, 3.6vw, 40px);
+	font-weight: 900;
+	letter-spacing: -0.04em;
+	line-height: 1.05;
+
 	color: var(--color-text);
 }
 
 .sub {
+	margin-top: 8px;
+
 	font-size: 14px;
-	color: var(--color-text-2);
-	margin-top: 6px;
 	line-height: 1.6;
+
+	color: var(--color-text-2);
 }
 
 /* =========================
-   GRID (modern SaaS layout)
+   GRID (premium SaaS layout)
 ========================= */
 
 .grid {
@@ -37,11 +41,12 @@
 }
 
 /* =========================
-   CARD (premium SaaS style)
+   CARD (premium glass style upgraded)
 ========================= */
 
 .card {
 	position: relative;
+	overflow: hidden;
 
 	display: flex;
 	flex-direction: column;
@@ -49,17 +54,23 @@
 
 	padding: 18px 18px 16px;
 
-	border-radius: 16px;
+	border-radius: 20px;
 
-	background: rgba(255, 255, 255, 0.75);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
+	background:
+		linear-gradient(
+			180deg,
+			rgba(255,255,255,0.03),
+			rgba(255,255,255,0.015)
+		),
+		var(--color-surface);
 
-	border: 1px solid rgba(0, 0, 0, 0.06);
+	border: 1px solid rgba(255,255,255,0.06);
 
 	box-shadow:
-		0 1px 2px rgba(0, 0, 0, 0.04),
-		0 10px 30px rgba(0, 0, 0, 0.04);
+		0 12px 34px rgba(0,0,0,0.18),
+		inset 0 1px 0 rgba(255,255,255,0.04);
+
+	backdrop-filter: blur(10px);
 
 	text-decoration: none;
 
@@ -69,43 +80,45 @@
 		border-color 0.18s ease;
 }
 
-/* hover = lift like Linear/Vercel */
-.card:hover {
-	transform: translateY(-3px);
-	border-color: rgba(59, 130, 246, 0.35);
-
-	box-shadow:
-		0 16px 40px rgba(0, 0, 0, 0.08),
-		0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-/* active feel */
-.card:active {
-	transform: translateY(-1px);
-}
-
-/* focus accessibility */
-.card:focus-visible {
-	outline: 2px solid rgba(59, 130, 246, 0.5);
-	outline-offset: 2px;
-}
-
-/* subtle top glow */
+/* glow layer */
 .card::before {
 	content: "";
+
 	position: absolute;
-	inset: 0;
-	border-radius: inherit;
-	background: radial-gradient(
-		400px 120px at 20% 0%,
-		rgba(59,130,246,0.12),
-		transparent 60%
-	);
-	opacity: 0;
-	transition: opacity 0.2s ease;
+	top: -60px;
+	right: -40px;
+
+	width: 160px;
+	height: 160px;
+
+	background: rgba(255,255,255,0.04);
+
+	filter: blur(60px);
+
 	pointer-events: none;
 }
 
+/* hover lift */
+.card:hover {
+	transform: translateY(-4px);
+
+	border-color: rgba(255,255,255,0.12);
+
+	box-shadow:
+		0 18px 42px rgba(0,0,0,0.24),
+		inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.card:active {
+	transform: translateY(-2px);
+}
+
+.card:focus-visible {
+	outline: 2px solid rgba(59, 130, 246, 0.45);
+	outline-offset: 2px;
+}
+
+/* hover glow activation */
 .card:hover::before {
 	opacity: 1;
 }
@@ -120,18 +133,20 @@
 	justify-content: space-between;
 }
 
-/* badge */
+/* badge upgraded */
 .num {
 	font-size: 11px;
-	font-weight: 700;
+	font-weight: 800;
 
 	color: var(--color-text-3);
-	background: rgba(0,0,0,0.04);
 
-	padding: 4px 8px;
+	background: rgba(255,255,255,0.04);
+	border: 1px solid rgba(255,255,255,0.06);
+
+	padding: 4px 10px;
 	border-radius: 999px;
 
-	letter-spacing: 0.02em;
+	letter-spacing: 0.04em;
 }
 
 /* =========================
@@ -140,50 +155,57 @@
 
 .cardTitle {
 	font-size: 15px;
-	font-weight: 750;
-	letter-spacing: -0.01em;
-	color: var(--color-text);
+	font-weight: 800;
+	letter-spacing: -0.02em;
 	line-height: 1.4;
+
+	color: var(--color-text);
 }
 
 .cardDesc {
 	font-size: 13px;
-	color: var(--color-text-2);
 	line-height: 1.55;
+
+	color: var(--color-text-2);
 }
 
 /* =========================
-   META (clean SaaS tags)
+   META (SaaS tags upgraded)
 ========================= */
 
 .cardMeta {
 	display: flex;
-	gap: 10px;
+	gap: 8px;
 
 	font-size: 12px;
 	color: var(--color-text-3);
-	font-weight: 500;
+	font-weight: 600;
 }
 
 .cardMeta span {
-	padding: 2px 8px;
+	padding: 3px 10px;
+
 	border-radius: 999px;
-	background: rgba(0,0,0,0.03);
+
+	background: rgba(255,255,255,0.03);
+	border: 1px solid rgba(255,255,255,0.05);
 }
 
 /* required highlight */
 .required {
 	color: #3b82f6 !important;
-	font-weight: 600;
-	background: rgba(59,130,246,0.08) !important;
+	font-weight: 700;
+
+	background: rgba(59,130,246,0.10) !important;
+	border: 1px solid rgba(59,130,246,0.18) !important;
 }
 
 /* =========================
-   PROGRESS (more modern)
+   PROGRESS
 ========================= */
 
 .progressWrap {
-	margin-top: 6px;
+	margin-top: 8px;
 }
 
 .progressTop {
@@ -197,7 +219,7 @@
 }
 
 /* =========================
-   EMPTY STATE (SaaS empty)
+   EMPTY STATE (glass upgrade)
 ========================= */
 
 .empty {
@@ -208,34 +230,47 @@
 	align-items: center;
 	justify-content: center;
 
-	padding: 70px 20px;
+	padding: 80px 20px;
 
-	background: rgba(255,255,255,0.6);
+	background:
+		linear-gradient(
+			180deg,
+			rgba(255,255,255,0.03),
+			rgba(255,255,255,0.015)
+		),
+		var(--color-surface);
+
 	backdrop-filter: blur(10px);
 
-	border: 1px dashed rgba(0,0,0,0.15);
-	border-radius: 18px;
+	border: 1px solid rgba(255,255,255,0.06);
+	border-radius: 22px;
 
 	text-align: center;
+
+	box-shadow:
+		0 14px 40px rgba(0,0,0,0.18),
+		inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 .emptyIcon {
-	font-size: 38px;
-	opacity: 0.7;
+	font-size: 40px;
+	opacity: 0.75;
 	margin-bottom: 12px;
 }
 
 .emptyTitle {
 	font-size: 16px;
-	font-weight: 750;
-	letter-spacing: -0.01em;
+	font-weight: 800;
+	letter-spacing: -0.02em;
 }
 
 .emptySub {
-	font-size: 14px;
-	color: var(--color-text-2);
 	margin-top: 6px;
-	line-height: 1.5;
+
+	font-size: 14px;
+	line-height: 1.6;
+
+	color: var(--color-text-2);
 }
 
 /* =========================
@@ -244,7 +279,7 @@
 
 @media (max-width: 640px) {
 	.page {
-		padding: 18px 14px;
+		padding: 20px 14px;
 	}
 
 	.grid {
@@ -253,5 +288,6 @@
 
 	.card {
 		padding: 16px;
+		border-radius: 18px;
 	}
 }

@@ -178,8 +178,10 @@ export default async function AdminReports() {
 											className={styles.scoreNum}
 											style={{ color: '#F59E0B' }}
 										>
-											<span>⏳</span>
-											<span>Очікує</span>
+											<div className={styles.pendingSpinnerWrap}>
+												<span className={styles.resultPending}>Очікує</span>
+												<span className={styles.pendingSpinner}></span>
+											</div>
 										</div>
 									) : (
 										<>
