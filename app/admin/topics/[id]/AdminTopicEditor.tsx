@@ -151,7 +151,7 @@ export default function AdminTopicEditor({
 					className={styles.back}
 					onClick={() => router.push('/admin/topics')}
 				>
-					← Всі теми
+					Всі теми
 				</button>
 				<h1 className={styles.title}>{topic.title}</h1>
 				{msg && <span className={styles.msg}>{msg}</span>}

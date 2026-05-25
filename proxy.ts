@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function proxy(request: NextRequest) {
 	let response = NextResponse.next({
-		request,
+		request
 	})
 
 	// Supabase client
@@ -20,14 +20,14 @@ export async function proxy(request: NextRequest) {
 					})
 
 					response = NextResponse.next({
-						request,
+						request
 					})
 
 					cookiesToSet.forEach(({ name, value, options }) => {
 						response.cookies.set(name, value, options)
 					})
-				},
-			},
+				}
+			}
 		}
 	)
 
@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
 
 	// Current user
 	const {
-		data: { user },
+		data: { user }
 	} = await supabase.auth.getUser()
 
 	// =========================
@@ -48,9 +48,7 @@ export async function proxy(request: NextRequest) {
 
 	// Не авторизован → login
 	if (!user && !isAuthPage) {
-		return NextResponse.redirect(
-			new URL('/auth/login', request.url)
-		)
+		return NextResponse.redirect(new URL('/auth/login', request.url))
 	}
 
 	// Если пользователя нет дальше логика не нужна
@@ -77,14 +75,9 @@ export async function proxy(request: NextRequest) {
 
 	// Авторизованный пользователь не должен видеть auth страницы
 	if (isAuthPage) {
-		const target =
-			role === 'admin'
-				? '/admin/dashboard'
-				: '/manager/dashboard'
+		const target = role === 'admin' ? '/admin/dashboard' : '/manager/dashboard'
 
-		return NextResponse.redirect(
-			new URL(target, request.url)
-		)
+		return NextResponse.redirect(new URL(target, request.url))
 	}
 
 	// =========================
@@ -93,16 +86,12 @@ export async function proxy(request: NextRequest) {
 
 	// Менеджер не может заходить в admin
 	if (isAdminPage && role !== 'admin') {
-		return NextResponse.redirect(
-			new URL('/manager/dashboard', request.url)
-		)
+		return NextResponse.redirect(new URL('/manager/dashboard', request.url))
 	}
 
 	return response
 }
 
 export const config = {
-	matcher: [
-		'/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-	],
+	matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)']
 }
