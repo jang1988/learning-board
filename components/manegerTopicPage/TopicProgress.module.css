@@ -1,0 +1,20 @@
+/* ============================================
+   PROGRESS
+============================================ */
+
+.progressWrap {
+	margin-bottom: 30px;
+}
+
+.progressInfo {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	margin-bottom: 10px;
+
+	font-size: 13px;
+	font-weight: 700;
+
+	color: var(--color-text-2);
+}

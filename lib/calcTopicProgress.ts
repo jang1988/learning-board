@@ -1,35 +1,57 @@
-export function calcTopicProgress(topics: any[], userId: string) {
-  return topics?.map(topic => {
-    const lessons = topic.lessons ?? []
+import { calcLessonsProgress } from './calcLessonsProgress'
 
-    const total = lessons.length
+/**
+ * Статус проходження теми.
+ * - not_started: жодного уроку не переглянуто
+ * - in_progress:  частина уроків переглянута
+ * - completed:    всі уроки переглянуто
+ */
+export type TopicStatus = 'not_started' | 'in_progress' | 'completed'
 
-    const done = lessons.filter((l: any) =>
-      l.lesson_progress?.some(
-        (p: any) =>
-          p.user_id === userId &&
-          p.status === 'completed'
-      )
-    ).length
+/**
+ * Тема зі збагаченими полями прогресу.
+ * Розширює вихідний об'єкт теми з БД.
+ */
+export interface EnrichedTopic {
+  /** Кількість переглянутих уроків поточним юзером */
+  lessonsDone: number
+  /** Загальна кількість уроків у темі */
+  lessonsTotal: number
+  /** Відсоток проходження (0–100) */
+  pct: number
+  /** Статус проходження теми */
+  status: TopicStatus
+  [key: string]: any
+}
 
-    const status =
-      done === 0
-        ? 'not_started'
-        : done === total
-          ? 'completed'
-          : 'in_progress'
+/**
+ * Збагачує масив тем даними про прогрес конкретного користувача.
+ *
+ * Призначений для списку тем, де lesson_progress містить
+ * записи всіх юзерів (без фільтрації на рівні SQL).
+ *
+ * @param topics - масив тем з вкладеними lessons і lesson_progress
+ * @param userId - ID поточного користувача
+ */
+export function enrichTopicsWithProgress(
+  topics: any[],
+  userId: string
+): EnrichedTopic[] {
+  return (
+    topics?.map(topic => {
+      const progress = calcLessonsProgress(topic.lessons ?? [], userId)
 
-    const pct =
-      total > 0
-        ? Math.round((done / total) * 100)
-        : 0
+      const status: TopicStatus =
+        !progress.isStarted  ? 'not_started' :
+        progress.isCompleted ? 'completed'   : 'in_progress'
 
-    return {
-      ...topic,
-      lessonsDone: done,
-      lessonsTotal: total,
-      status,
-      pct
-    }
-  }) ?? []
+      return {
+        ...topic,
+        lessonsDone:  progress.done,
+        lessonsTotal: progress.total,
+        pct:          progress.percent,
+        status,
+      }
+    }) ?? []
+  )
 }

@@ -42,35 +42,30 @@ export type Topic = {
 }
 
 export type EnrichedTopic = Topic & {
-  lessonsTotal: number
-  lessonsDone: number
-  pct: number
-  status: TopicStatus
-  hasQuiz: boolean
+	lessonsTotal: number
+	lessonsDone: number
+	pct: number
+	status: TopicStatus
+	hasQuiz: boolean
 }
 
-export interface Lesson {
+export type LessonProgressStatus = 'completed' | 'in_progress' | 'not_started'
+
+export type Lesson = {
 	id: string
-	topic_id: string
 	title: string
-	description?: string
-	video_url: string
-	duration_sec?: number
 	order_index: number
-	created_at: string
-	// joined
-	materials?: Material[]
-	progress?: LessonProgress
+
+	materials: Material[]
+
+	lesson_progress: LessonProgress[]
 }
 
-export interface Material {
+export type Material = {
 	id: string
-	lesson_id?: string
-	topic_id?: string
 	title: string
+	type: string
 	url: string
-	type: MaterialType
-	created_at: string
 }
 
 export interface Quiz {
@@ -104,13 +99,10 @@ export interface Answer {
 	order_index: number
 }
 
-export interface LessonProgress {
-	id: string
+export type LessonProgress = {
+	status: LessonProgressStatus
+	completed_at: string | null
 	user_id: string
-	lesson_id: string
-	status: ProgressStatus
-	watch_time_sec: number
-	completed_at?: string
 }
 
 export interface TopicProgress {
@@ -124,17 +116,16 @@ export interface TopicProgress {
 	completed_at?: string
 }
 
-export interface QuizResult {
+export type QuizResultStatus = 'pending' | 'reviewed'
+
+export type QuizResult = {
 	id: string
-	user_id: string
-	quiz_id: string
-	score: number
-	max_score: number
-	percent: number
+
 	passed: boolean
+
+	status: QuizResultStatus
+
 	attempt_num: number
-	time_spent_sec?: number
-	submitted_at: string
 }
 
 // ============================================================
