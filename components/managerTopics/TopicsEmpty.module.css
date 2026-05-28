@@ -1,0 +1,54 @@
+/* =========================
+   EMPTY STATE (glass upgrade)
+========================= */
+
+.empty {
+	grid-column: 1 / -1;
+
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+
+	padding: 80px 20px;
+
+	background:
+		linear-gradient(
+			180deg,
+			rgba(255,255,255,0.03),
+			rgba(255,255,255,0.015)
+		),
+		var(--color-surface);
+
+	backdrop-filter: blur(10px);
+
+	border: 1px solid rgba(255,255,255,0.06);
+	border-radius: 22px;
+
+	text-align: center;
+
+	box-shadow:
+		0 14px 40px rgba(0,0,0,0.18),
+		inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.emptyIcon {
+	font-size: 40px;
+	opacity: 0.75;
+	margin-bottom: 12px;
+}
+
+.emptyTitle {
+	font-size: 16px;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+}
+
+.emptySub {
+	margin-top: 6px;
+
+	font-size: 14px;
+	line-height: 1.6;
+
+	color: var(--color-text-2);
+}

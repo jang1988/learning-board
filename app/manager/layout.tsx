@@ -1,7 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import Sidebar from '@/components/layout/Sidebar'
-import s from '@/components/layout/Sidebar.module.css'
 import DashboardShell from '@/components/layout/DashboardShell'
 
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {
