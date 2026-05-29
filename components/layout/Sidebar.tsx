@@ -2,6 +2,15 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { Profile } from '@/types'
+import {
+	BarChart3,
+	BookOpen,
+	CheckCircle2,
+	FilePenLine,
+	LayoutDashboard,
+	LucideIcon,
+	Users
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -10,21 +19,53 @@ import s from './Sidebar.module.css'
 interface NavItem {
 	href: string
 	label: string
-	icon: string
+	icon: LucideIcon
 }
 
 const managerNav: NavItem[] = [
-	{ href: '/manager/dashboard', label: 'Головна', icon: '⊞' },
-	{ href: '/manager/topics', label: 'Теми', icon: '▤' },
-	{ href: '/manager/results', label: 'Результати', icon: '✓' }
+	{
+		href: '/manager/dashboard',
+		label: 'Головна',
+		icon: LayoutDashboard
+	},
+	{
+		href: '/manager/topics',
+		label: 'Теми',
+		icon: BookOpen
+	},
+	{
+		href: '/manager/results',
+		label: 'Результати',
+		icon: CheckCircle2
+	}
 ]
 
 const adminNav: NavItem[] = [
-	{ href: '/admin/dashboard', label: 'Дашборд', icon: '⊞' },
-	{ href: '/admin/topics', label: 'Теми', icon: '▤' },
-	{ href: '/admin/users', label: 'Співробітники', icon: '◎' },
-	{ href: '/admin/reports', label: 'Звіти', icon: '↗' },
-	{ href: '/admin/text-answers', label: 'Перевірка', icon: '✏️' }
+	{
+		href: '/admin/dashboard',
+		label: 'Дашборд',
+		icon: LayoutDashboard
+	},
+	{
+		href: '/admin/topics',
+		label: 'Теми',
+		icon: BookOpen
+	},
+	{
+		href: '/admin/users',
+		label: 'Співробітники',
+		icon: Users
+	},
+	{
+		href: '/admin/reports',
+		label: 'Звіти',
+		icon: BarChart3
+	},
+	{
+		href: '/admin/text-answers',
+		label: 'Перевірка',
+		icon: FilePenLine
+	}
 ]
 
 interface SidebarProps {
@@ -58,7 +99,7 @@ export default function Sidebar({ profile, hidden }: SidebarProps) {
 		<>
 			<button
 				className={`${s.sideTrigger} ${open ? s.sideTriggerHidden : ''}`}
-				onClick={() => setOpen(true)}
+				onClick={() => setOpen(prev => !prev)}
 			>
 				›
 			</button>
@@ -97,17 +138,24 @@ export default function Sidebar({ profile, hidden }: SidebarProps) {
 					<div className={s.navSection}>
 						<div className={s.navLabel}>{isAdmin ? 'Управління' : 'Навчання'}</div>
 
-						{nav.map(item => (
-							<Link
-								key={item.href}
-								href={item.href}
-								className={`${s.navItem} ${pathname === item.href ? s.active : ''}`}
-								onClick={() => setOpen(false)}
-							>
-								<span className={s.navIcon}>{item.icon}</span>
-								{item.label}
-							</Link>
-						))}
+						{nav.map(item => {
+							const Icon = item.icon
+
+							return (
+								<Link
+									key={item.href}
+									href={item.href}
+									className={`${s.navItem} ${pathname === item.href ? s.active : ''}`}
+									onClick={() => setOpen(false)}
+								>
+									<span className={s.navIcon}>
+										<Icon size={20} />
+									</span>
+
+									{item.label}
+								</Link>
+							)
+						})}
 					</div>
 				</nav>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import styles from '@/app/manager/topics/[id]/topic.module.css'
+import styles from './LessonCard.module.css'
 import VideoPlayer from '@/components/video/VideoPlayer'
 
 type Material = {

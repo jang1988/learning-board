@@ -46,8 +46,12 @@
 	pointer-events: none;
 }
 
-.quizIcon {
-	font-size: 34px;
+.bgIcon {
+	position: absolute;
+	right: -10px;
+	top: -10px;
+	opacity: 0.08;
+	pointer-events: none;
 }
 
 .quizTitle {

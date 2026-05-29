@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import styles from './QuizCard.module.css'
+import { FileText } from 'lucide-react'
 
 type Props = {
 	topicId: string
@@ -37,7 +38,7 @@ export function QuizCard({
 
 	return (
 		<div className={styles.quizCard}>
-			<div className={styles.quizIcon}>📝</div>
+			<FileText className={styles.bgIcon} size={100} />
 
 			<h3 className={styles.quizTitle}>{quiz.title}</h3>
 
