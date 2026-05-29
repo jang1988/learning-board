@@ -49,7 +49,7 @@
 .bgIcon {
 	position: absolute;
 	right: -10px;
-	top: -10px;
+	top: -2px;
 	opacity: 0.08;
 	pointer-events: none;
 }
@@ -65,9 +65,8 @@
 .quizMeta {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
 
-	font-size: 13px;
+	font-size: 16px;
 	line-height: 1.6;
 
 	color: var(--color-text-2);
@@ -80,7 +79,7 @@
 .quizResult {
 	display: flex;
 	flex-direction: column;
-	gap: 5px;
+	align-items: center;
 
 	padding: 16px;
 
@@ -88,7 +87,7 @@
 
 	border: 1px solid rgba(255, 255, 255, 0.06);
 
-	font-size: 13px;
+	font-size: 15px;
 	font-weight: 700;
 }
 
@@ -128,6 +127,10 @@
 ============================================ */
 
 .quizLocked {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	justify-content: center;
 	padding: 14px;
 
 	border-radius: 16px;
@@ -136,7 +139,7 @@
 
 	border: 1px solid rgba(255, 255, 255, 0.06);
 
-	font-size: 12px;
+	font-size: 16px;
 	font-weight: 600;
 	line-height: 1.6;
 
@@ -159,7 +162,7 @@
 
 	width: 100%;
 
-	padding: 14px 18px;
+	padding: 12px 16px;
 
 	border-radius: 16px;
 
@@ -169,7 +172,7 @@
 
 	color: #fff;
 
-	font-size: 13px;
+	font-size: 15px;
 	font-weight: 800;
 	letter-spacing: 0.01em;
 

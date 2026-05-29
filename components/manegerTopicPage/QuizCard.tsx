@@ -1,7 +1,14 @@
 import Link from 'next/link'
 
+import {
+	ClockAlert,
+	LockKeyhole,
+	LockKeyholeOpen,
+	ShieldBan,
+	ShieldCheck,
+	ShieldX
+} from 'lucide-react'
 import styles from './QuizCard.module.css'
-import { FileText } from 'lucide-react'
 
 type Props = {
 	topicId: string
@@ -20,6 +27,8 @@ type Props = {
 	isLocked: boolean
 }
 
+type QuizStatus = 'locked' | 'available' | 'pending' | 'failed' | 'passed'
+
 export function QuizCard({
 	topicId,
 	quiz,
@@ -36,9 +45,35 @@ export function QuizCard({
 }: Props) {
 	const questionsCount = quiz.questions?.[0]?.count ?? 0
 
+	const status: QuizStatus = (() => {
+		if (isLocked) return 'locked'
+		if (isPending) return 'pending'
+		if (quizResult && hasPassed) return 'passed'
+		if (quizResult && !hasPassed) return 'failed'
+		return 'available'
+	})()
+
+	const iconMap = {
+		locked: (
+			<ShieldBan className={styles.bgIcon} size={100} color="var(--color-text-3)" />
+		),
+		available: (
+			<LockKeyholeOpen className={styles.bgIcon} size={100} color="var(--color-accent)" />
+		),
+		pending: (
+			<ClockAlert className={styles.bgIcon} size={100} color="var(--color-warn)" />
+		),
+		failed: (
+			<ShieldX className={styles.bgIcon} size={100} color="var(--color-danger)" />
+		),
+		passed: (
+			<ShieldCheck className={styles.bgIcon} size={100} color="var(--color-accent)" />
+		)
+	}
+	
 	return (
 		<div className={styles.quizCard}>
-			<FileText className={styles.bgIcon} size={100} />
+			{iconMap[status]}
 
 			<h3 className={styles.quizTitle}>{quiz.title}</h3>
 
@@ -72,13 +107,17 @@ export function QuizCard({
 
 					<span>{hasPassed ? '✓ Пройдено' : '✕ Не пройдено'}</span>
 
-					<span>Спроба #{quizResult.attempt_num}</span>
+					<span>{hasPassed ? '' : `Спроба ${quizResult.attempt_num}`}</span>
 				</div>
 			)}
 
 			{/* Locked */}
 
-			{isLocked && <div className={styles.quizLocked}>🔒 Завершіть всі уроки</div>}
+			{isLocked && (
+				<div className={styles.quizLocked}>
+					<LockKeyhole /> Завершіть всі уроки
+				</div>
+			)}
 
 			{/* Start Button */}
 

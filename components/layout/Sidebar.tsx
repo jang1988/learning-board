@@ -8,6 +8,7 @@ import {
 	CheckCircle2,
 	FilePenLine,
 	LayoutDashboard,
+	LogOut,
 	LucideIcon,
 	Users
 } from 'lucide-react'
@@ -174,7 +175,7 @@ export default function Sidebar({ profile, hidden }: SidebarProps) {
 						className={s.navItem}
 						onClick={handleLogout}
 					>
-						<span className={s.navIcon}>⎋</span>
+						<LogOut color="var(--color-danger)" size={20} style={{ transform: 'rotate(180deg)' }} />
 						Вийти
 					</button>
 				</div>
