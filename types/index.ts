@@ -81,6 +81,23 @@ export interface Quiz {
 	last_result?: QuizResult
 }
 
+export type QuizCard = {
+	topicId: string
+
+	quiz: any
+
+	quizResult: any | null
+
+	isPending: boolean
+	isReviewed: boolean
+	hasPassed: boolean
+
+	attemptsLeft: number
+
+	canStartQuiz: boolean
+	isLocked: boolean
+}
+
 export interface Question {
 	id: string
 	quiz_id: string
@@ -154,4 +171,58 @@ export interface UserProgressSummary {
 	progress_percent: number
 	last_activity?: string
 	quiz_avg_score?: number
+}
+
+// ─── Shared Quiz Types ───────────────────────────────────────────────────────
+
+export interface QuizQuestion {
+	id: string
+	type: QuestionType
+	points?: number
+	order_index?: number
+	answers?: QuizAnswerRaw[]
+}
+
+export interface QuizAnswerRaw {
+	id: string
+	question_id: string
+	is_correct: boolean
+	order_index?: number
+}
+
+/** Answer row fetched from DB (is_correct included) */
+export interface QuizAnswerDB {
+	id: string
+	question_id: string
+	is_correct: boolean
+}
+
+/** Map of question_id → array of selected answer_ids */
+export type UserAnswers = Record<string, string[]>
+
+export interface QuizMeta {
+	id: string
+	passing_score: number
+	questions?: QuizQuestion[]
+}
+
+export interface SubmitResult {
+	passed: boolean
+	percent: number
+	/** true when there are unevaluated text answers */
+	pending: boolean
+}
+
+export interface QuizAnswerSafe {
+    id: string
+    question_id: string
+    order_index?: number      // is_correct намеренно отсутствует
+}
+
+export interface QuizQuestionSafe extends Omit<QuizQuestion, 'answers'> {
+    answers?: QuizAnswerSafe[] // после sanitize — без is_correct
+}
+
+export interface QuizMetaSafe extends Omit<QuizMeta, 'questions'> {
+    questions?: QuizQuestionSafe[]
 }

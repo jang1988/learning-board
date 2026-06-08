@@ -142,7 +142,6 @@ export default async function AdminUsers() {
 // Server component can't handle clicks — this is a placeholder
 // In real app, make this a Client Component with server action
 function RoleToggle({
-	userId,
 	currentRole
 }: {
 	userId: string

@@ -56,7 +56,7 @@ export default function VideoPlayer({ url, title, onComplete }: VideoPlayerProps
 			{!watched && onComplete && (
 				<div className={styles.completeBar}>
 					<span className={styles.completeHint}>
-						Просмотрите видео, затем отметьте урок как завершённый
+						Перегляньте відео, потім позначте урок як завершений
 					</span>
 					<button
 						className={styles.completeBtn}
@@ -65,7 +65,7 @@ export default function VideoPlayer({ url, title, onComplete }: VideoPlayerProps
 							onComplete()
 						}}
 					>
-						✓ Урок просмотрен
+						✓ Урок переглянуто
 					</button>
 				</div>
 			)}

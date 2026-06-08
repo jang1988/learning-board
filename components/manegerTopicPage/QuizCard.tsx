@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import type { QuizCard } from '@/types/index'
 import {
 	ClockAlert,
 	LockKeyhole,
@@ -9,23 +10,6 @@ import {
 	ShieldX
 } from 'lucide-react'
 import styles from './QuizCard.module.css'
-
-type Props = {
-	topicId: string
-
-	quiz: any
-
-	quizResult: any | null
-
-	isPending: boolean
-	isReviewed: boolean
-	hasPassed: boolean
-
-	attemptsLeft: number
-
-	canStartQuiz: boolean
-	isLocked: boolean
-}
 
 type QuizStatus = 'locked' | 'available' | 'pending' | 'failed' | 'passed'
 
@@ -42,7 +26,7 @@ export function QuizCard({
 
 	canStartQuiz,
 	isLocked
-}: Props) {
+}: QuizCard) {
 	const questionsCount = quiz.questions?.[0]?.count ?? 0
 
 	const status: QuizStatus = (() => {
@@ -55,22 +39,42 @@ export function QuizCard({
 
 	const iconMap = {
 		locked: (
-			<ShieldBan className={styles.bgIcon} size={100} color="var(--color-text-3)" />
+			<ShieldBan
+				className={styles.bgIcon}
+				size={100}
+				color="var(--color-text-3)"
+			/>
 		),
 		available: (
-			<LockKeyholeOpen className={styles.bgIcon} size={100} color="var(--color-accent)" />
+			<LockKeyholeOpen
+				className={styles.bgIcon}
+				size={100}
+				color="var(--color-accent)"
+			/>
 		),
 		pending: (
-			<ClockAlert className={styles.bgIcon} size={100} color="var(--color-warn)" />
+			<ClockAlert
+				className={styles.bgIcon}
+				size={100}
+				color="var(--color-warn)"
+			/>
 		),
 		failed: (
-			<ShieldX className={styles.bgIcon} size={100} color="var(--color-danger)" />
+			<ShieldX
+				className={styles.bgIcon}
+				size={100}
+				color="var(--color-danger)"
+			/>
 		),
 		passed: (
-			<ShieldCheck className={styles.bgIcon} size={100} color="var(--color-accent)" />
+			<ShieldCheck
+				className={styles.bgIcon}
+				size={100}
+				color="var(--color-accent)"
+			/>
 		)
 	}
-	
+
 	return (
 		<div className={styles.quizCard}>
 			{iconMap[status]}
