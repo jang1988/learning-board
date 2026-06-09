@@ -1,4 +1,4 @@
-import { calcLessonsProgress } from './calcLessonsProgress'
+import { calcLessonsProgress } from '@/lib/manager/calcLessonsProgress'
 
 /**
  * Статус результату тесту з точки зору відображення.

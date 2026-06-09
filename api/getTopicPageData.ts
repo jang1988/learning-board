@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { buildTopicProgress, TopicProgress } from '@/lib/buildTopicProgress'
+import { buildTopicProgress, TopicProgress } from '@/lib/manager/buildTopicProgress'
 
 interface Params {
   topicId: string
