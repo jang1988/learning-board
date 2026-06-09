@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import styles from './users.module.css'
 
@@ -72,26 +73,37 @@ export default async function AdminUsers() {
 									: null
 
 							return (
-								<tr key={emp.id}>
+								<tr
+									key={emp.id}
+									className={styles.clickableRow}
+								>
 									<td data-label="Співробітник">
-										<div className={styles.empRow}>
-											<div className={styles.avatar}>
-												{emp.full_name
-													.split(' ')
-													.slice(0, 2)
-													.map((w: string) => w[0])
-													.join('')
-													.toUpperCase()}
+										<Link
+											href={`/admin/users/${emp.id}`}
+											className={styles.userLink}
+										>
+											<div className={styles.empRow}>
+												<div className={styles.avatar}>
+													{emp.full_name
+														.split(' ')
+														.slice(0, 2)
+														.map((w: string) => w[0])
+														.join('')
+														.toUpperCase()}
+												</div>
+												<div>
+													<div className={styles.empName}>{emp.full_name}</div>
+												</div>
 											</div>
-											<div>
-												<div className={styles.empName}>{emp.full_name}</div>
-											</div>
-										</div>
+										</Link>
 									</td>
 									<td data-label="Відділ">
 										<span className={styles.dept}>{emp.department ?? '—'}</span>
 									</td>
-									<td data-label="Прогрес" style={{ minWidth: 140 }}>
+									<td
+										data-label="Прогрес"
+										style={{ minWidth: 140 }}
+									>
 										<div className={styles.miniBar}>
 											<div
 												className="progress-bar"
@@ -141,20 +153,11 @@ export default async function AdminUsers() {
 
 // Server component can't handle clicks — this is a placeholder
 // In real app, make this a Client Component with server action
-function RoleToggle({
-	currentRole
-}: {
-	userId: string
-	currentRole: string
-}) {
+function RoleToggle({ currentRole }: { userId: string; currentRole: string }) {
 	const isAdmin = currentRole === 'admin'
 
 	return (
-		<span
-			className={`badge ${
-				isAdmin ? 'badge--blue' : 'badge--gray'
-			} ${styles.roleBadge}`}
-		>
+		<span className={`badge ${isAdmin ? 'badge--blue' : 'badge--gray'} ${styles.roleBadge}`}>
 			{isAdmin ? 'Адмін' : 'Співробітник'}
 		</span>
 	)

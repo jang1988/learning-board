@@ -1,4 +1,4 @@
-import { calcLessonsProgress } from './calcLessonsProgress'
+import { calcLessonsProgress } from './manager/calcLessonsProgress'
 
 /**
  * Статус проходження теми.

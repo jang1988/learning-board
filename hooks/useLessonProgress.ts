@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { completeLesson } from '@/lib/completeLesson'
+import { completeLesson } from '@/lib/manager/completeLesson'
 
 type Props = {
   initialCompletedIds: string[]

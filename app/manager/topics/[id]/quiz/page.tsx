@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 
 import { getQuizByTopicId } from '@/api/getQuizzes'
 import { getQuizAttemptsCount } from '@/api/getQuizResults'
-import { sanitizeQuiz } from '@/lib/sanitizeQuiz'
+import { sanitizeQuiz } from '@/lib/manager/sanitizeQuiz'
 
 import QuizPageClient from './QuizPageClient'
 

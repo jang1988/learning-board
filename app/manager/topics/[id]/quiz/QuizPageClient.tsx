@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import QuizPlayer from '@/components/quiz/QuizPlayer'
-import QuizResult from '@/components/quiz/QuizResult'
+import QuizPlayer from '@/components/managerQuiz/QuizPlayer'
+import QuizResult from '@/components/managerQuiz/QuizResult'
 import styles from './quiz.module.css'
 
 interface Props {

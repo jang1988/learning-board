@@ -7,9 +7,9 @@ import LessonList from './LessonList'
 import { useQuizAccess } from '@/hooks/useQuizAccess'
 import { useTopicProgress } from '@/hooks/useTopicProgress'
 
-import { QuizCard } from '@/components/manegerTopicPage/QuizCard'
-import { TopicHero } from '@/components/manegerTopicPage/TopicHero'
-import { TopicProgress } from '@/components/manegerTopicPage/TopicProgress'
+import { QuizCard } from '@/components/managerTopicPage/QuizCard'
+import { TopicHero } from '@/components/managerTopicPage/TopicHero'
+import { TopicProgress } from '@/components/managerTopicPage/TopicProgress'
 import styles from './topic.module.css'
 
 export default function TopicPageClient({

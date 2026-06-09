@@ -12,7 +12,7 @@ import QuizTextAnswer from './QuizTextAnswer'
 import { useQuizSecurity } from '@/hooks/useQuizSecurity'
 import { useQuizSubmission } from '@/hooks/useQuizSubmission'
 import { useQuizTimer } from '@/hooks/useQuizTimer'
-import { enterFullscreen, exitFullscreen } from '@/lib/fullscreen'
+import { enterFullscreen, exitFullscreen } from '@/lib/manager/fullscreen'
 
 import type { QuizMeta, QuizQuestion, SubmitResult, UserAnswers } from '@/types'
 import styles from './QuizPlayer.module.css'

@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 import { getTopics } from '@/api/getTopicsData'
-import { enrichTopics } from '@/lib/enrichTopics'
+import { enrichTopics } from '@/lib/manager/enrichTopics'
 
 import { TopicCard } from '@/components/managerTopics/TopicCard'
 import { TopicsEmpty } from '@/components/managerTopics/TopicsEmpty'
