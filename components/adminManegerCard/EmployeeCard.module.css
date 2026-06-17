@@ -1,0 +1,359 @@
+/* CARD */
+
+.card {
+	position: relative;
+	overflow: hidden;
+
+	padding: 20px;
+
+	border-radius: 28px;
+
+	text-decoration: none;
+
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+
+	border: 1px solid rgba(255, 255, 255, 0.12);
+
+	backdrop-filter: blur(24px);
+	-webkit-backdrop-filter: blur(24px);
+
+	box-shadow:
+		0 12px 40px rgba(0, 0, 0, 0.22),
+		inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+	transition:
+		transform 0.25s ease,
+		border-color 0.25s ease,
+		box-shadow 0.25s ease;
+}
+
+.card:hover {
+	transform: translateY(-4px);
+
+	border-color: rgba(255, 255, 255, 0.18);
+
+	box-shadow:
+		0 20px 50px rgba(0, 0, 0, 0.28),
+		0 0 40px rgba(59, 130, 246, 0.08);
+}
+
+.card::before {
+	content: '';
+
+	position: absolute;
+	top: -80px;
+	right: -80px;
+
+	width: 180px;
+	height: 180px;
+
+	background: rgba(255, 255, 255, 0.05);
+
+	filter: blur(80px);
+
+	pointer-events: none;
+}
+
+/* SCORE COLORS */
+
+.cardSuccess,
+.cardWarning,
+.cardDanger {
+	position: relative;
+}
+
+.cardSuccess::after,
+.cardWarning::after,
+.cardDanger::after {
+	content: '';
+
+	position: absolute;
+	inset: 0;
+
+	pointer-events: none;
+}
+
+.cardSuccess::after {
+	background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 50%);
+}
+
+.cardWarning::after {
+	background: radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 50%);
+}
+
+.cardDanger::after {
+	background: radial-gradient(circle at top right, rgba(239, 68, 68, 0.12), transparent 50%);
+}
+
+.cardSuccess:hover {
+	box-shadow:
+		0 20px 50px rgba(0, 0, 0, 0.28),
+		0 0 40px rgba(16, 185, 129, 0.15);
+}
+
+.cardWarning:hover {
+	box-shadow:
+		0 20px 50px rgba(0, 0, 0, 0.28),
+		0 0 40px rgba(245, 158, 11, 0.15);
+}
+
+.cardDanger:hover {
+	box-shadow:
+		0 20px 50px rgba(0, 0, 0, 0.28),
+		0 0 40px rgba(239, 68, 68, 0.15);
+}
+
+/* HEADER */
+
+.cardHeader,
+.cardBody {
+	position: relative;
+	z-index: 2;
+}
+
+.cardHeader {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+
+	margin-bottom: 20px;
+}
+
+.left {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+}
+
+/* AVATAR */
+
+.avatar {
+	color: #fff;
+	background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+	border-radius: 20px;
+	justify-content: center;
+	align-items: center;
+	min-width: 64px;
+	height: 64px;
+	font-size: 28px;
+	font-weight: 900;
+	display: flex;
+	box-shadow:
+		0 16px 40px #00000040,
+		inset 0 1px #ffffff1f;
+}
+
+.empName {
+	font-size: 15px;
+	font-weight: 800;
+
+	color: var(--color-text);
+}
+
+.dept {
+	margin-top: 4px;
+
+	font-size: 12px;
+
+	color: var(--color-text-3);
+}
+
+/* STATUS */
+
+.status {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+
+	min-width: 90px;
+
+	padding: 6px 10px;
+
+	border-radius: 999px;
+
+	font-size: 11px;
+	font-weight: 700;
+
+	backdrop-filter: blur(12px);
+}
+
+.status span {
+	width: 8px;
+	height: 8px;
+
+	border-radius: 50%;
+}
+
+.active {
+	background: rgba(16, 185, 129, 0.08);
+	color: #10b981;
+}
+
+.active span {
+	background: #10b981;
+
+	box-shadow:
+		0 0 12px #10b981,
+		0 0 20px #10b981;
+}
+
+.inactive {
+	background: rgba(148, 163, 184, 0.08);
+	color: #94a3b8;
+}
+
+.inactive span {
+	background: #94a3b8;
+}
+
+/* BODY */
+
+.cardBody {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+/* PROGRESS RING */
+
+.progressRing {
+	position: relative;
+
+	width: 100px;
+	height: 100px;
+
+	flex-shrink: 0;
+}
+
+.progressRing svg {
+	width: 100%;
+	height: 100%;
+
+	transform: rotate(-90deg);
+
+	overflow: visible;
+}
+
+.track {
+	fill: none;
+
+	stroke: rgba(255, 255, 255, 0.08);
+
+	stroke-width: 8;
+}
+
+.indicator {
+	fill: none;
+
+	stroke-width: 8;
+	stroke-linecap: round;
+
+	filter: drop-shadow(0 0 10px rgba(16, 185, 155, 0.7));
+
+	animation: progressAppear 0.8s ease;
+
+	transition: stroke-dashoffset 0.6s ease;
+}
+
+.progressValue {
+	position: absolute;
+	inset: 0;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	font-size: 18px;
+	font-weight: 900;
+
+	color: var(--color-text);
+}
+
+@keyframes progressAppear {
+	from {
+		stroke-dashoffset: 264;
+	}
+}
+
+/* KPI */
+
+.kpis {
+	flex: 1;
+
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 12px;
+}
+
+.kpi {
+	position: relative;
+}
+
+.kpi span {
+	display: block;
+
+	margin-bottom: 6px;
+
+	font-size: 11px;
+	font-weight: 700;
+
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+
+	color: var(--color-text-3);
+}
+
+.kpi strong {
+	font-size: 22px;
+	font-weight: 900;
+	line-height: 1;
+
+	color: var(--color-text);
+}
+
+/* TABLET */
+
+@media (max-width: 768px) {
+	.card {
+		padding: 16px;
+	}
+
+	.kpi strong {
+		font-size: 18px;
+	}
+}
+
+/* MOBILE */
+
+@media (max-width: 640px) {
+	.cardBody {
+		align-items: center;
+	}
+
+	.progressRing {
+		width: 90px;
+		height: 90px;
+	}
+
+	.kpis {
+		width: 100%;
+	}
+}
+
+@media (max-width: 480px) {
+	.avatar {
+		width: 44px;
+		height: 44px;
+	}
+
+	.kpis {
+		gap: 10px;
+	}
+
+	.progressRing {
+		width: 80px;
+		height: 80px;
+	}
+}

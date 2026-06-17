@@ -1,0 +1,74 @@
+/* KPI GRID */
+
+.statsGrid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 14px;
+
+	margin-bottom: 26px;
+}
+
+.card {
+	position: relative;
+	overflow: hidden;
+
+	padding: 18px;
+
+	border-radius: 22px;
+
+	background:
+		linear-gradient(
+			180deg,
+			rgba(255,255,255,0.03),
+			rgba(255,255,255,0.015)
+		),
+		var(--color-surface);
+
+	border: 1px solid rgba(255,255,255,0.06);
+
+	box-shadow:
+		0 14px 34px rgba(0,0,0,0.18),
+		inset 0 1px 0 rgba(255,255,255,0.04);
+
+	backdrop-filter: blur(10px);
+
+	transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.card:hover {
+	transform: translateY(-3px);
+	border-color: rgba(255,255,255,0.12);
+}
+
+.value {
+	font-size: 26px;
+	font-weight: 900;
+	letter-spacing: -0.03em;
+
+	color: var(--color-text);
+}
+
+.label {
+	margin-top: 6px;
+
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+
+	color: var(--color-text-3);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1024px) {
+	.statsGrid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 600px) {
+	.statsGrid {
+		grid-template-columns: 1fr;
+	}
+}

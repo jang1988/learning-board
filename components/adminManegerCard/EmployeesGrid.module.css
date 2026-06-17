@@ -1,0 +1,16 @@
+/* GRID */
+
+.cardsGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+	gap: 18px;
+}
+
+@media (max-width: 768px) {
+
+	.cardsGrid {
+		grid-template-columns: 1fr;
+		gap: 14px;
+	}
+
+}

@@ -1,4 +1,4 @@
-import styles from '@/app/admin/users/[id]/user.module.css'
+import styles from './UserHeader.module.css'
 
 export default function UserHeader({ employee }: any) {
 	const initials = employee.full_name

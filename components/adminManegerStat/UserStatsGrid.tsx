@@ -1,4 +1,4 @@
-import styles from '@/app/admin/users/[id]/user.module.css'
+import styles from './UserStatsGrid.module.css'
 
 export default function UserStatsGrid({
 	topicsTotal,

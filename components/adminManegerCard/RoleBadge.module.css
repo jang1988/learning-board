@@ -1,0 +1,16 @@
+/* ROLE */
+
+.roleBadge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	width: fit-content;
+
+	padding: 6px 10px;
+
+	border-radius: 999px;
+
+	font-size: 11px;
+	font-weight: 800;
+}

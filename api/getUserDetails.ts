@@ -7,26 +7,36 @@ export async function getUserDetails(userId: string) {
 		.from('profiles')
 		.select(
 			`
+		id,
+		full_name,
+		department,
+
+		topic_progress(
 			id,
-			full_name,
-			department,
-
-			topic_progress(
+			status,
+			started_at,
+			completed_at,
+			lessons_done,
+			lessons_total,
+			topic:topics(
 				id,
-				status,
-				started_at,
-				completed_at,
-				lessons_done,
-				lessons_total,
-				topic:topics(
-					id,
-					title
-				)
-			),
+				title
+			)
+		),
 
-			lesson_progress(*),
-			quiz_results(*)
-		`
+		lesson_progress(
+			id,
+			status,
+			watch_time_sec,
+			completed_at,
+			lesson:lessons(
+				id,
+				title
+			)
+		),
+
+		quiz_results(*)
+	`
 		)
 		.eq('id', userId)
 		.single()
