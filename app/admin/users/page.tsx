@@ -1,5 +1,5 @@
 import EmployeesGrid from '@/components/adminManegerCard/EmployeesGrid'
-import { getEmployees } from '@/api/getEmployees'
+import { getEmployees } from '@/api/getEmployeesUserPage'
 import styles from './users.module.css'
 
 export default async function AdminUsers() {
