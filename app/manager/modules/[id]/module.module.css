@@ -1,0 +1,185 @@
+/* ============================================
+   PAGE
+============================================ */
+
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	padding: 32px;
+	max-width: 1180px;
+	margin: 0 auto;
+}
+
+/* ============================================
+   HEADER (MODULE INFO)
+============================================ */
+
+.header {
+	padding: 22px;
+
+	border-radius: 20px;
+
+	backdrop-filter: blur(18px);
+
+	border: 1px solid rgba(255, 255, 255, 0.08);
+
+	box-shadow:
+		0 18px 50px rgba(0, 0, 0, 0.25),
+		inset 0 1px 0 rgba(255, 255, 255, 0.05);
+	background: radial-gradient(1000px circle at 10% 0%, rgba(16, 185, 129, 0.14), transparent 40%);
+}
+
+.header h1 {
+	font-size: 26px;
+	font-weight: 900;
+	letter-spacing: -0.03em;
+	text-align: center;
+
+	color: var(--color-text);
+}
+
+.header p {
+	margin-top: 6px;
+	font-size: 13px;
+	line-height: 1.6;
+
+	color: var(--color-text-3);
+}
+
+.header span {
+	display: inline-block;
+	margin-top: 12px;
+
+	padding: 6px 10px;
+
+	border-radius: 999px;
+
+	font-size: 12px;
+	font-weight: 800;
+
+	background: rgba(16, 185, 129, 0.14);
+	border: 1px solid rgba(16, 185, 129, 0.24);
+
+	color: var(--color-text-3);
+}
+
+/* ============================================
+   TOPICS GRID
+============================================ */
+
+.topics {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+	gap: 14px;
+}
+
+/* ============================================
+   TOPIC CARD
+============================================ */
+
+.topicHeader {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.topic {
+	padding: 14px;
+
+	border-radius: 16px;
+
+	background: rgba(255, 255, 255, 0.03);
+	backdrop-filter: blur(14px);
+
+	border: 1px solid rgba(255, 255, 255, 0.06);
+
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+
+	transition:
+		transform 0.18s ease,
+		border-color 0.18s ease,
+		box-shadow 0.18s ease;
+}
+
+.topic:hover {
+	transform: translateY(-3px) scale(1.01);
+
+	box-shadow:
+		0 25px 70px rgba(0, 0, 0, 0.35),
+		0 0 0 1px rgba(16, 185, 129, 0.12),
+		0 0 30px rgba(16, 185, 129, 0.08);
+}
+
+.topic h3 {
+	font-size: 14px;
+	font-weight: 800;
+
+	color: var(--color-text);
+}
+
+.topic p {
+	margin-top: 6px;
+
+	font-size: 12px;
+	line-height: 1.5;
+
+	color: var(--color-text-3);
+}
+
+.num {
+	position: relative;
+
+	min-width: 42px;
+	height: 42px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	border-radius: 14px;
+
+	font-size: 13px;
+	font-weight: 900;
+
+	color: white;
+
+	background: linear-gradient(
+		135deg,
+		var(--color-accent),
+		color-mix(in srgb, var(--color-accent) 60%, white)
+	);
+
+	box-shadow:
+		0 8px 24px color-mix(in srgb, var(--color-accent) 30%, transparent),
+		inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* ============================================
+   META
+============================================ */
+
+.meta {
+	margin-top: 10px;
+
+	font-size: 11px;
+	font-weight: 700;
+
+	color: var(--color-text-2);
+	opacity: 0.9;
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+
+@media (max-width: 768px) {
+	.page {
+		padding: 16px;
+	}
+
+	.header h1 {
+		font-size: 22px;
+	}
+}

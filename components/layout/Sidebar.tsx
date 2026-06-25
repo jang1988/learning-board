@@ -6,6 +6,7 @@ import {
 	BarChart3,
 	BookOpen,
 	CheckCircle2,
+	Component,
 	FilePenLine,
 	LayoutDashboard,
 	LogOut,
@@ -30,6 +31,11 @@ const managerNav: NavItem[] = [
 		icon: LayoutDashboard
 	},
 	{
+		href: '/manager/modules',
+		label: 'Категорії',
+		icon: Component
+	},
+	{
 		href: '/manager/topics',
 		label: 'Теми',
 		icon: BookOpen
@@ -46,6 +52,11 @@ const adminNav: NavItem[] = [
 		href: '/admin/dashboard',
 		label: 'Дашборд',
 		icon: LayoutDashboard
+	},
+	{
+		href: '/admin/modules',
+		label: 'Категорії',
+		icon: Component
 	},
 	{
 		href: '/admin/topics',
@@ -175,7 +186,11 @@ export default function Sidebar({ profile, hidden }: SidebarProps) {
 						className={s.navItem}
 						onClick={handleLogout}
 					>
-						<LogOut color="var(--color-danger)" size={20} style={{ transform: 'rotate(180deg)' }} />
+						<LogOut
+							color="var(--color-danger)"
+							size={20}
+							style={{ transform: 'rotate(180deg)' }}
+						/>
 						Вийти
 					</button>
 				</div>

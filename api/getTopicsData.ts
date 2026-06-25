@@ -11,6 +11,13 @@ export async function getTopics() {
       description,
       is_required,
       order_index,
+      module_topics(
+        module:modules(
+          id,
+          title,
+          color
+        )
+      ),
       lessons(
         id,
         lesson_progress(status, user_id)

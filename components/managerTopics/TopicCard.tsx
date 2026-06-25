@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import { NotebookPen, Video } from 'lucide-react'
+import { CSSProperties } from 'react'
 import styles from './TopicCard.module.css'
 
 type Props = {
@@ -8,14 +9,19 @@ type Props = {
 	index: number
 }
 
-export function TopicCard({ topic, index }: Props) {
+export function TopicCard({ topic }: Props) {
 	return (
 		<Link
 			href={`/manager/topics/${topic.id}`}
 			className={styles.card}
+			style={
+				{
+					'--topic-color': topic.color
+				} as CSSProperties
+			}
 		>
 			<div className={styles.cardTop}>
-				<div className={styles.num}>#{index + 1}</div>
+				<div className={styles.num}>{topic.module}</div>
 
 				<StatusBadge status={topic.status} />
 			</div>
@@ -53,7 +59,7 @@ export function TopicCard({ topic, index }: Props) {
 function StatusBadge({ status }: { status: string }) {
 	const map = {
 		completed: {
-			text: '✓ Завершено',
+			text: 'Завершено',
 			className: 'badge--green'
 		},
 		in_progress: {
