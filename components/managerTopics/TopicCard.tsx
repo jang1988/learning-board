@@ -44,7 +44,7 @@ export function TopicCard({ topic }: Props) {
 				{topic.is_required && <span className={styles.required}>Обов'язкова</span>}
 			</div>
 
-			{topic.status !== 'not_started' && (
+			{topic.status && (
 				<Progress
 					done={topic.lessonsDone}
 					total={topic.lessonsTotal}
