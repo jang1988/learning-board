@@ -16,7 +16,7 @@ export function TopicsSection({ enrichedTopics }: any) {
 					</div>
 
 					<div className={styles.topicList}>
-						{enrichedTopics.slice(0, 4).map((topic: any) => (
+						{enrichedTopics.map((topic: any) => (
 							<Link
 								href={`/manager/topics/${topic.id}`}
 								key={topic.id}
