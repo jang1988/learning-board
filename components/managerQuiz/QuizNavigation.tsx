@@ -1,6 +1,15 @@
 import styles from './QuizNavigation.module.css'
+import type { QuizQuestionSafe } from '@/types'
 
-export default function QuizNavigation({ current, questions, submitting, goNext, handleSubmit }: any) {
+type Props = {
+	current: number
+	questions: QuizQuestionSafe[]
+	submitting: boolean
+	goNext: () => void
+	handleSubmit: () => void
+}
+
+export default function QuizNavigation({ current, questions, submitting, goNext, handleSubmit }: Props) {
 	return (
 		<div className={styles.nav}>
 				{current < questions.length - 1 ? (

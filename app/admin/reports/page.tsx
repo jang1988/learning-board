@@ -58,11 +58,6 @@ export default async function AdminReports() {
 
 	const failedResults = checkedResults.filter(r => !r.passed).length ?? 0
 
-	const avgScore =
-		totalResults > 0
-			? Math.round(checkedResults.reduce((s, r) => s + r.percent, 0) / totalResults)
-			: 0
-
 	return (
 		<div className={styles.page}>
 			<div className={styles.header}>

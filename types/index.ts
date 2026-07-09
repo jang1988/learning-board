@@ -177,7 +177,9 @@ export interface UserProgressSummary {
 
 export interface QuizQuestion {
 	id: string
+	text: string
 	type: QuestionType
+	hint?: string | null
 	points?: number
 	order_index?: number
 	answers?: QuizAnswerRaw[]
@@ -186,6 +188,7 @@ export interface QuizQuestion {
 export interface QuizAnswerRaw {
 	id: string
 	question_id: string
+	text: string
 	is_correct: boolean
 	order_index?: number
 }
@@ -203,6 +206,7 @@ export type UserAnswers = Record<string, string[]>
 export interface QuizMeta {
 	id: string
 	passing_score: number
+	max_attempts?: number
 	questions?: QuizQuestion[]
 }
 
@@ -216,6 +220,7 @@ export interface SubmitResult {
 export interface QuizAnswerSafe {
     id: string
     question_id: string
+    text: string
     order_index?: number      // is_correct намеренно отсутствует
 }
 

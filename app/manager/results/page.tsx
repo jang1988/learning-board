@@ -11,8 +11,6 @@ export default async function ManagerResults() {
 	if (!user) redirect('/auth/login')
 
 	// Профіль
-	const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
-
 	// === Теми + уроки + прогрес (основний запит) ===
 	const { data: topicsRaw } = await supabase
 		.from('topics')
@@ -103,8 +101,6 @@ export default async function ManagerResults() {
 	const checkedResults = quizResults?.filter(r => r.status !== 'pending') ?? []
 
 	const pendingQuizzes = quizResults?.filter(r => r.status === 'pending').length ?? 0
-
-	const totalQuizzes = checkedResults.length
 
 	const passedQuizzes = checkedResults.filter(r => r.passed).length
 

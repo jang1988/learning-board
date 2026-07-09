@@ -3,9 +3,9 @@ import styles from './LessonProgress.module.css'
 export default function LessonProgress({ data }: any) {
 	return (
 		<div className={styles.section}>
-			<h2>Уроки</h2>
+			<h2>Останні переглянуті уроки</h2>
 
-			{data.map((l: any) => (
+			{data.slice(-8).reverse().map((l: any) => (
 				<div
 					key={l.id}
 					className={styles.item}
@@ -28,31 +28,6 @@ export default function LessonProgress({ data }: any) {
 						</div>
 					</div>
 
-					{/* <div className={styles.metaRow}>
-						<div className={styles.metaItem}>
-							<span className={styles.metaLabel}>
-								Статус
-							</span>
-
-							<span className={styles.metaValue}>
-								{l.status}
-							</span>
-						</div>
-
-						<div className={styles.metaItem}>
-							<span className={styles.metaLabel}>
-								Час
-							</span>
-
-							<span className={styles.metaValue}>
-								{Math.round(
-									(l.watch_time_sec || 0) /
-										60
-								)}{' '}
-								хв
-							</span>
-						</div>
-					</div> */}
 				</div>
 			))}
 		</div>

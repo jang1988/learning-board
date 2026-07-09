@@ -41,7 +41,7 @@ export async function getEmployees() {
 				head: true
 			})
 	])
-
+	
 	return mapEmployees(
 		employees ?? [],
 		topicsTotal ?? 0

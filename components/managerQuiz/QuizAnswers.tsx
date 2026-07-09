@@ -1,9 +1,16 @@
 import styles from './QuizAnswers.module.css'
+import type { QuizQuestionSafe } from '@/types'
 
-export default function QuizAnswers({ question, chosen, toggleAnswer }: any) {
+type Props = {
+	question: QuizQuestionSafe
+	chosen: string[]
+	toggleAnswer: (answerId: string) => void
+}
+
+export default function QuizAnswers({ question, chosen, toggleAnswer }: Props) {
 	return (
 		<div className={styles.answers}>
-			{question?.answers?.map((a: any) => {
+			{question.answers?.map(a => {
 				const selected = chosen.includes(a.id)
 				return (
 					<button

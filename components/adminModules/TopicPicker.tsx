@@ -83,6 +83,7 @@ export default function TopicPicker({
 			<button
 				className={styles.trigger}
 				onClick={() => setOpen(v => !v)}
+				disabled={isPending}
 			>
 				{selected
 					? topics.find(t => t.id === selected)?.title

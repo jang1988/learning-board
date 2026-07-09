@@ -35,9 +35,11 @@ export function useTopicProgress({
     setCompletedIds(prev => {
       const next = new Set(prev)
 
-      completed
-        ? next.add(lessonId)
-        : next.delete(lessonId)
+      if (completed) {
+        next.add(lessonId)
+      } else {
+        next.delete(lessonId)
+      }
 
       return next
     })

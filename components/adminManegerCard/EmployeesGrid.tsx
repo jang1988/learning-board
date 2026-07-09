@@ -7,6 +7,7 @@ export default function EmployeesGrid({
 }: {
 	employees: any[]
 }) {
+	
 	return (
 		<div className={styles.cardsGrid}>
 			{employees.map(employee => (

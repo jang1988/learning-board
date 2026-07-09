@@ -1,4 +1,13 @@
-import type { QuizMeta, QuizMetaSafe, QuizQuestion } from '@/types'
+import type { QuizAnswerRaw, QuizAnswerSafe, QuizMeta, QuizMetaSafe, QuizQuestion } from '@/types'
+
+function sanitizeAnswer(answer: QuizAnswerRaw): QuizAnswerSafe {
+	return {
+		id: answer.id,
+		question_id: answer.question_id,
+		text: answer.text,
+		order_index: answer.order_index,
+	}
+}
 
 export function sanitizeQuiz(quiz: QuizMeta): QuizMetaSafe {
 	return {
@@ -9,7 +18,7 @@ export function sanitizeQuiz(quiz: QuizMeta): QuizMetaSafe {
 				...question,
 				answers: [...(question.answers ?? [])]
 					.sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
-					.map(({ is_correct: _stripped, ...answer }) => answer)
+					.map(sanitizeAnswer)
 			}))
 	}
 }

@@ -1,6 +1,7 @@
 import { redirect, notFound } from 'next/navigation'
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 import { getQuizByTopicId } from '@/api/getQuizzes'
 import { getQuizAttemptsCount } from '@/api/getQuizResults'
@@ -31,8 +32,10 @@ export default async function QuizPage({
 		redirect('/auth/login')
 	}
 
+	const admin = createAdminClient()
+
 	const quiz = await getQuizByTopicId(
-		supabase,
+		admin,
 		id
 	)
 
@@ -42,7 +45,7 @@ export default async function QuizPage({
 
 	const attemptsDone =
 		await getQuizAttemptsCount(
-			supabase,
+			admin,
 			user.id,
 			quiz.id
 		)
@@ -56,7 +59,6 @@ export default async function QuizPage({
 	return (
 		<QuizPageClient
 			quiz={sanitizeQuiz(quiz)}
-			userId={user.id}
 			topicId={id}
 			attemptNum={attemptNum}
 			attemptsLeft={

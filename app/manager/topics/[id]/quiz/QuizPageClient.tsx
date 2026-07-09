@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import QuizPlayer from '@/components/managerQuiz/QuizPlayer'
 import QuizResult from '@/components/managerQuiz/QuizResult'
+import type { QuizMetaSafe } from '@/types'
 import styles from './quiz.module.css'
 
 interface Props {
-  quiz: any
-  userId: string
+  quiz: QuizMetaSafe
   topicId: string
   attemptNum: number
   attemptsLeft: number
@@ -19,10 +19,12 @@ interface ResultType {
   pending: boolean
 }
 
-export default function QuizPageClient({ quiz, userId, topicId, attemptNum, attemptsLeft }: Props) {
+export default function QuizPageClient({ quiz, topicId, attemptNum, attemptsLeft }: Props) {
   const [result, setResult] = useState<ResultType | null>(null)
   const [currentAttempt, setCurrentAttempt] = useState(attemptNum)
   const [retrying, setRetrying] = useState(false)
+  const attemptsUsedInSession = currentAttempt - attemptNum
+  const attemptsLeftNow = Math.max(0, attemptsLeft - attemptsUsedInSession)
 
   const handleRetry = () => {
     setResult(null)
@@ -40,9 +42,9 @@ export default function QuizPageClient({ quiz, userId, topicId, attemptNum, atte
           pending={result.pending}
           passingScore={quiz.passing_score}
           topicId={topicId}
-          attemptsLeft={attemptsLeft}
+          attemptsLeft={attemptsLeftNow}
           onRetry={
-            attemptsLeft > 0 && !result.passed && !result.pending
+            attemptsLeftNow > 0 && !result.passed && !result.pending
               ? handleRetry
               : undefined
           }
@@ -62,7 +64,6 @@ export default function QuizPageClient({ quiz, userId, topicId, attemptNum, atte
       </div>
       <QuizPlayer
         quiz={quiz}
-        userId={userId}
         attemptNum={currentAttempt}
         onFinish={setResult}
       />

@@ -35,7 +35,20 @@ export async function getUserDetails(userId: string) {
 			)
 		),
 
-		quiz_results(*)
+		quiz_results(
+			*,
+				quiz:quizzes(
+					id,
+					title,
+					passing_score,
+					max_attempts,
+					time_limit_sec,
+					topic:topics(
+						id,
+						title
+					)
+		)
+	)
 	`
 		)
 		.eq('id', userId)

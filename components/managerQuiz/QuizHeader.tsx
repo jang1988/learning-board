@@ -1,4 +1,5 @@
 import styles from './QuizHeader.module.css'
+import type { QuizQuestionSafe } from '@/types'
 
 export default function QuizHeader({
 	current,
@@ -7,7 +8,7 @@ export default function QuizHeader({
 	formatTime
 }: {
 	current: number
-	questions: any[]
+	questions: QuizQuestionSafe[]
 	questionTimeLeft: number
 	formatTime: (time: number) => string
 }) {

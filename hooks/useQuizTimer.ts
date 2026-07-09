@@ -6,40 +6,39 @@ export function useQuizTimer(
 	onExpire: () => void,
 	resetKey: number,
 ) {
-	const [timeLeft, setTimeLeft] = useState(initialTime)
+	const [timer, setTimer] = useState({
+		resetKey,
+		timeLeft: initialTime,
+	})
 	const onExpireRef = useRef(onExpire)
-	const resetKeyRef = useRef(resetKey)
 
 	useEffect(() => {
 		onExpireRef.current = onExpire
 	}, [onExpire])
 
-	// Сброс при смене вопроса
-	useEffect(() => {
-		resetKeyRef.current = resetKey
-		setTimeLeft(initialTime)
-	}, [resetKey, initialTime])
+	const timeLeft = timer.resetKey === resetKey ? timer.timeLeft : initialTime
 
 	useEffect(() => {
 		if (!active) return
 
-		const keyAtSchedule = resetKeyRef.current
-
 		if (timeLeft <= 0) {
-			if (keyAtSchedule === resetKeyRef.current) {
-				onExpireRef.current()
-			}
+			onExpireRef.current()
 			return
 		}
 
 		const timer = setTimeout(() => {
-			if (keyAtSchedule === resetKeyRef.current) {
-				setTimeLeft(prev => prev - 1)
-			}
+			setTimer(prev => {
+				const currentTime = prev.resetKey === resetKey ? prev.timeLeft : initialTime
+
+				return {
+					resetKey,
+					timeLeft: Math.max(0, currentTime - 1),
+				}
+			})
 		}, 1000)
 
 		return () => clearTimeout(timer)
-	}, [active, timeLeft, resetKey])
+	}, [active, initialTime, resetKey, timeLeft])
 
 	return { timeLeft }
 }

@@ -1,7 +1,7 @@
 import { getDashboardData } from '../api/getDashboardData'
 import { enrichTopicsWithProgress } from '@/lib/manager/calcTopicProgress'
 
-export async function useDashboard(userId: string) {
+export async function getDashboardViewModel(userId: string) {
 	const { profile, topics, recentResults } =
 		await getDashboardData(userId)
 

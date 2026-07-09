@@ -1,218 +1,79 @@
-# OnBoard — Платформа обучения новых сотрудников
+# Learning Board
 
-Next.js 14 + CSS Modules + Supabase
+Learning Board is an internal onboarding and learning platform built with Next.js App Router and Supabase.
 
----
+## Stack
 
-## Стек
+- Next.js 16.2 with App Router, Server Components, Route Handlers, and Proxy
+- React 19
+- TypeScript
+- CSS Modules
+- Supabase Auth, PostgreSQL, RLS, and SSR cookies
 
-- **Next.js 14** (App Router, Server Components)
-- **CSS Modules** — все стили изолированы по компонентам
-- **Supabase** — PostgreSQL + Auth + Storage + RLS
-- **TypeScript** — полная типизация
+## Roles
 
----
+- `manager`: views assigned learning content, completes lessons, takes quizzes, and tracks personal progress.
+- `admin`: manages topics, lessons, modules, quiz content, employees, reports, and text-answer reviews.
 
-## Роли пользователей
+## Environment
 
-| Роль | Возможности |
-|------|-------------|
-| `manager` | Просмотр тем, видеоуроки, прохождение тестов, свой прогресс |
-| `admin` | Управление темами/уроками/тестами, дашборд с аналитикой, управление сотрудниками |
-
----
-
-## Быстрый старт
-
-### 1. Установка зависимостей
+Create `.env.local` with:
 
 ```bash
-npm install
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
 ```
 
-### 2. Создать проект в Supabase
+`SUPABASE_SERVICE_ROLE_KEY` is server-only. It is required for secure quiz submission because correct answers are intentionally not readable by normal authenticated clients.
 
-Зайти на [supabase.com](https://supabase.com), создать новый проект.
+## Database
 
-### 3. Настроить переменные окружения
+Run the migration:
 
 ```bash
-cp .env.local.example .env.local
-```
-
-Заполнить `NEXT_PUBLIC_SUPABASE_URL` и `NEXT_PUBLIC_SUPABASE_ANON_KEY` из настроек проекта в Supabase (Settings → API).
-
-### 4. Запустить миграцию БД
-
-В Supabase Dashboard → SQL Editor выполнить содержимое файла:
-
-```
 supabase/migrations/001_initial_schema.sql
 ```
 
-### 5. Создать первого администратора
+The migration creates:
 
-1. Зарегистрироваться через `/auth/register`
-2. В Supabase Dashboard → Table Editor → `profiles`
-3. Найти свою запись и изменить `role` с `manager` на `admin`
+- core learning tables: `topics`, `lessons`, `materials`, `quizzes`, `questions`, `answers`
+- progress tables: `lesson_progress`, `topic_progress`, `quiz_results`, `text_answers`
+- module tables: `modules`, `module_topics`
+- `profiles` linked to `auth.users`
+- RLS policies for manager/admin access
+- an auth trigger that creates a default manager profile
 
-### 6. Запустить проект
+After the first user signs up, promote the initial administrator in Supabase:
+
+```sql
+update public.profiles
+set role = 'admin'
+where email = 'admin@example.com';
+```
+
+## Development
 
 ```bash
+npm install
 npm run dev
 ```
 
-Открыть [http://localhost:3000](http://localhost:3000)
+Open `http://localhost:3000`.
 
----
+## Verification
 
-## Структура проекта
-
+```bash
+npm run lint
+npm run build
 ```
 
-app/
-│
-├── layout.tsx
-│
-├── auth/
-│   ├── auth.module.css
-│   ├── login/
-│   │   └── page.tsx
-│   └── register/
-│       └── page.tsx
-│
-├── admin/
-│   ├── layout.tsx
-│   │
-│   ├── dashboard/
-│   │   ├── page.tsx
-│   │   └── dashboard.module.css
-│   │
-│   ├── reports/
-│   │   ├── page.tsx
-│   │   └── reports.module.css
-│   │
-│   ├── users/
-│   │   ├── page.tsx
-│   │   └── users.module.css
-│   │
-│   └── topics/
-│       ├── page.tsx
-│       ├── topics.module.css
-│       │
-│       ├── new/
-│       │   ├── page.tsx
-│       │   └── new.module.css
-│       │
-│       └── [id]/
-│           ├── page.tsx
-│           ├── AdminTopicEditor.tsx
-│           └── editor.module.css
-│
-├── manager/
-│   ├── layout.tsx
-│   │
-│   ├── dashboard/
-│   │   ├── page.tsx
-│   │   └── dashboard.module.css
-│   │
-│   └── topics/
-│       ├── page.tsx
-│       ├── topics.module.css
-│       │
-│       └── [id]/
-│           ├── page.tsx
-│           ├── topic.module.css
-│           ├── LessonList.tsx
-│           │
-│           └── quiz/
-│               ├── page.tsx
-│               ├── QuizPageClient.tsx
-│               └── quiz.module.css
-│
-components/
-│
-├── layout/
-│   ├── Sidebar.tsx
-│   └── Sidebar.module.css
-│
-├── quiz/
-│   ├── QuizPlayer.tsx
-│   ├── QuizPlayer.module.css
-│   ├── QuizResult.tsx
-│   └── QuizResult.module.css
-│
-└── video/
-    ├── VideoPlayer.tsx
-    └── VideoPlayer.module.css
-│
-lib/
-└── supabase/
-    ├── client.ts
-    └── server.ts
-│
-styles/
-└── globals.css
-│
-public/
-├── file.svg
-├── globe.svg
-├── vercel.svg
-└── window.svg
-│
-types/
-└── index.ts
-│
-.env.local
-.gitignore
-README.md
-AGENTS.md
-CLAUDE.md
-package.json
-package-lock.json
-tsconfig.json
-eslint.config.mjs
-postcss.config.mjs
-proxy.ts
-```
+Both commands should pass before deploying.
 
----
+## Security Notes
 
-## Схема базы данных
-
-```
-profiles          — пользователи (расширяет auth.users)
-topics            — темы обучения
-lessons           — видеоуроки (YouTube/Vimeo URL)
-materials         — доп. материалы (PDF, ссылки)
-quizzes           — тесты по темам
-questions         — вопросы теста (single/multiple/text)
-answers           — варианты ответов
-lesson_progress   — прогресс по урокам
-topic_progress    — прогресс по темам
-quiz_results      — результаты тестов
-```
-
-Все таблицы защищены **Row Level Security (RLS)**:
-- Менеджер видит только свои данные
-- Администратор видит всё
-
----
-
-## Видео
-
-Поддерживаются ссылки формата:
-- `https://www.youtube.com/watch?v=VIDEO_ID`
-- `https://youtu.be/VIDEO_ID`
-- `https://vimeo.com/VIDEO_ID`
-
----
-
-## Дальнейшее развитие
-
-- [ ] Уведомления (email при назначении темы)
-- [ ] Экспорт отчётов в CSV/Excel
-- [ ] Дедлайны для прохождения тем
-- [ ] Загрузка файлов в Supabase Storage
-- [ ] Комментарии к урокам
-- [ ] Группы сотрудников / отделы
+- `proxy.ts` performs optimistic redirects for authenticated/admin routes.
+- Server layouts still verify auth and role before rendering protected areas.
+- Quiz answers are sanitized before reaching the browser.
+- Quiz scoring is performed by `app/api/quiz/submit/route.ts` on the server, using the authenticated cookie session plus a server-only Supabase service role client.
+- RLS blocks normal users from reading `answers.is_correct`; admins retain content-management access.

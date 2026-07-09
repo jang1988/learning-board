@@ -10,11 +10,6 @@ export default function UserStatsGrid({
 	const topicPct =
 		topicsTotal > 0 ? Math.round((completedTopics / topicsTotal) * 100) : 0
 
-	const lessonPct =
-		lessonsTotal > 0
-			? Math.round((completedLessons / lessonsTotal) * 100)
-			: 0
-
 	return (
 		<div className={styles.statsGrid}>
 			<div className={styles.card}>

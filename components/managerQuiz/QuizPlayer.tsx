@@ -1,6 +1,5 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
 import { useCallback, useRef, useState } from 'react'
 
 import QuizAnswers from './QuizAnswers'
@@ -14,7 +13,7 @@ import { useQuizSubmission } from '@/hooks/useQuizSubmission'
 import { useQuizTimer } from '@/hooks/useQuizTimer'
 import { enterFullscreen, exitFullscreen } from '@/lib/manager/fullscreen'
 
-import type { QuizMeta, QuizQuestion, SubmitResult, UserAnswers } from '@/types'
+import type { QuizMetaSafe, QuizQuestionSafe, SubmitResult, UserAnswers } from '@/types'
 import styles from './QuizPlayer.module.css'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -24,16 +23,15 @@ const QUESTION_TIME = 30
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Props {
-	quiz: QuizMeta
-	userId: string
+	quiz: QuizMetaSafe
 	attemptNum: number
 	onFinish: (result: SubmitResult) => void
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function QuizPlayer({ quiz, userId, attemptNum, onFinish }: Props) {
-	const questions = (quiz.questions ?? []) as QuizQuestion[]
+export default function QuizPlayer({ quiz, attemptNum, onFinish }: Props) {
+	const questions = (quiz.questions ?? []) as QuizQuestionSafe[]
 
 	// ── State ───────────────────────────────────────────────────────────────
 	const [started, setStarted] = useState(false)
@@ -51,10 +49,8 @@ export default function QuizPlayer({ quiz, userId, attemptNum, onFinish }: Props
 	// ── Submission hook ─────────────────────────────────────────────────────
 	const { submit } = useQuizSubmission({
 		quiz,
-		userId,
 		attemptNum,
 		userAnswers,
-		questions,
 		startTimeRef,
 		finishedRef, // ← передаём единый флаг
 	})
@@ -81,34 +77,18 @@ export default function QuizPlayer({ quiz, userId, attemptNum, onFinish }: Props
 	}, [submit, onFinish])
 
 	// ── Force finish (anti-cheat violation) ─────────────────────────────────
-	// Обновляемый ref — всегда актуальные пропсы без stale closure
-	const handleForceFinishRef = useRef<() => Promise<void>>(null!)
-	handleForceFinishRef.current = async () => {
+	const handleForceFinish = useCallback(async () => {
 		if (finishedRef.current) return
-		finishedRef.current = true
 		setSubmitting(true)
 
-		const supabase = createClient()
-		await supabase.from('quiz_results').insert({
-			user_id: userId,
-			quiz_id: quiz.id,
-			score: 0,
-			max_score: questions.reduce((s, q) => s + (q.points ?? 1), 0),
-			percent: 0,
-			passed: false,
-			attempt_num: attemptNum,
-			status: 'reviewed',
-			time_spent_sec: Math.floor((Date.now() - startTimeRef.current) / 1000),
-		})
-
+		const result = await submit({ forceFail: true })
 		await exitFullscreen()
-		onFinish({ passed: false, percent: 0, pending: false })
-	}
+		onFinish(result)
+	}, [submit, onFinish])
 
-	// Стабильная ссылка для useQuizSecurity — не ре-подписывает эффекты
 	const handleViolation = useCallback(() => {
-		handleForceFinishRef.current()
-	}, [])
+		handleForceFinish()
+	}, [handleForceFinish])
 
 	// ── Timer ────────────────────────────────────────────────────────────────
 	const handleTimeExpire = useCallback(() => {

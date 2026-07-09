@@ -1,7 +1,7 @@
 import { DashboardStats } from '@/components/managerDashboard/DashboardStats'
 import { RecentQuizzes } from '@/components/managerDashboard/RecentQuizzes'
 import { TopicsSection } from '@/components/managerDashboard/TopicsSection'
-import { useDashboard } from '@/hooks/useDashboard'
+import { getDashboardViewModel } from '@/hooks/useDashboard'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import styles from './dashboard.module.css'
@@ -15,7 +15,7 @@ export default async function ManagerDashboard() {
 
 	if (!user) redirect('/auth/login')
 
-	const data = await useDashboard(user.id)
+	const data = await getDashboardViewModel(user.id)
 	const { profile, recentResults, topics: enrichedTopics, stats } = data
 	const { total, completed } = stats
 

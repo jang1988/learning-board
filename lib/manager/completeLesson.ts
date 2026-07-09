@@ -44,7 +44,27 @@ export async function completeLesson({
 		.eq('user_id', userId)
 		.eq('topic_id', topicId)
 		.maybeSingle()
+const { error: topicError } = await supabase.from('topic_progress').upsert(
+  {
+    user_id: userId,
+    topic_id: topicId,
+    status: topicStatus,
+    lessons_done: lessonsDone,
+    lessons_total: lessonsTotal,
+    started_at: existing?.started_at ?? new Date().toISOString(),
+    ...(topicStatus === 'completed'
+      ? { completed_at: new Date().toISOString() }
+      : {})
+  },
+  {
+    onConflict: 'user_id,topic_id'
+  }
+)
 
+if (topicError) {
+  console.error('topic_progress upsert failed:', topicError)
+  throw topicError
+}
 	await supabase.from('topic_progress').upsert(
 		{
 			user_id: userId,
