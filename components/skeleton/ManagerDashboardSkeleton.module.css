@@ -1,0 +1,88 @@
+.statsGrid {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 18px;
+	margin: 28px 0;
+}
+
+.statCard {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+
+	padding: 18px;
+
+	border-radius: 22px;
+
+	background: var(--color-surface);
+
+	border: 1px solid rgba(255, 255, 255, .06);
+}
+
+.statContent {
+	flex: 1;
+
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.section {
+	padding: 22px;
+
+	border-radius: 24px;
+
+	background: var(--color-surface);
+
+	border: 1px solid rgba(255,255,255,.06);
+}
+
+.list {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+
+	margin-top: 20px;
+}
+
+.topicCard {
+	padding: 18px;
+
+	border-radius: 18px;
+
+	background: rgba(255,255,255,.03);
+
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.resultCard {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	padding: 16px 0;
+
+	border-bottom: 1px solid rgba(255,255,255,.05);
+}
+
+.resultCard:last-child {
+	border-bottom: none;
+}
+
+@media (max-width:1024px){
+
+	.statsGrid{
+		grid-template-columns:repeat(2,1fr);
+	}
+
+}
+
+@media (max-width:640px){
+
+	.statsGrid{
+		grid-template-columns:1fr;
+	}
+
+}
