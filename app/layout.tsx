@@ -1,3 +1,4 @@
+import FloatingBackground from '@/components/layout/FloatingBackground'
 import '@/styles/globals.css'
 import type { Metadata } from 'next'
 
@@ -12,8 +13,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="uk">
-			<body>{children}</body>
-		</html>
+		 <html lang="uk">
+      <body>
+        <FloatingBackground />
+
+        <main className="app-content">
+          {children}
+        </main>
+      </body>
+    </html>
 	)
 }
