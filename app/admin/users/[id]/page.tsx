@@ -1,7 +1,7 @@
 import { getGlobalStats } from '@/api/getGlobalStats'
 import { getUserDetails } from '@/api/getUserDetails'
 import LessonProgress from '@/components/adminManegerStat/LessonProgress'
-import QuizHistory from '@/components/adminManegerStat/QuizHistory'
+import QuizHistory from '@/components/adminManegerStat/UserQuizHistory'
 import TopicProgress from '@/components/adminManegerStat/TopicProgress'
 import UserHeader from '@/components/adminManegerStat/UserHeader'
 import UserStatsGrid from '@/components/adminManegerStat/UserStatsGrid'

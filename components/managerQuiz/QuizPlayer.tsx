@@ -18,7 +18,7 @@ import styles from './QuizPlayer.module.css'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const QUESTION_TIME = 30
+const QUESTION_TIME = 120
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
