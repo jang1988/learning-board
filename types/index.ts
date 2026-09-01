@@ -183,7 +183,7 @@ export type QuizQuestion = {
   hint?: string | null
   points?: number
   order_index?: number
-  answers?: QuizAnswer[]
+  answers?: QuizAnswerRaw[]
 }
 
 export interface QuizAnswerRaw {
