@@ -175,14 +175,15 @@ export interface UserProgressSummary {
 
 // ─── Shared Quiz Types ───────────────────────────────────────────────────────
 
-export interface QuizQuestion {
-	id: string
-	text: string
-	type: QuestionType
-	hint?: string | null
-	points?: number
-	order_index?: number
-	answers?: QuizAnswerRaw[]
+export type QuizQuestion = {
+  id: string
+  quiz_id: string
+  text: string
+  type: QuestionType
+  hint?: string | null
+  points?: number
+  order_index?: number
+  answers?: QuizAnswer[]
 }
 
 export interface QuizAnswerRaw {
@@ -225,14 +226,14 @@ export interface QuizAnswerSafe {
 }
 
 export type QuizQuestionSafe = {
-	id: string
-	quiz_id: string
-	text: string
-	type: 'single' | 'multiple' | 'text'
-	order_index: number
-	points: number
-	hint?: string | null
-	answers: QuizAnswerSafe[]
+  id: string
+  quiz_id: string
+  text: string
+  type: QuestionType
+  hint?: string | null
+  points?: number
+  order_index?: number
+  answers: QuizAnswerSafe[]
 }
 
 export interface QuizMetaSafe extends Omit<QuizMeta, 'questions'> {
