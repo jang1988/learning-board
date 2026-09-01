@@ -218,16 +218,23 @@ export interface SubmitResult {
 }
 
 export interface QuizAnswerSafe {
-    id: string
-    question_id: string
-    text: string
-    order_index?: number      // is_correct намеренно отсутствует
+	id: string
+	question_id: string
+	text: string
+	order_index?: number // is_correct намеренно отсутствует
 }
 
-export interface QuizQuestionSafe extends Omit<QuizQuestion, 'answers'> {
-    answers?: QuizAnswerSafe[] // после sanitize — без is_correct
+export type QuizQuestionSafe = {
+	id: string
+	quiz_id: string
+	text: string
+	type: 'single' | 'multiple' | 'text'
+	order_index: number
+	points: number
+	hint?: string | null
+	answers: QuizAnswerSafe[]
 }
 
 export interface QuizMetaSafe extends Omit<QuizMeta, 'questions'> {
-    questions?: QuizQuestionSafe[]
+	questions?: QuizQuestionSafe[]
 }
